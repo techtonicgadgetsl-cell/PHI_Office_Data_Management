@@ -91,13 +91,9 @@
                         <label class="text-[10px] uppercase font-black text-slate-400 block mb-1">Target Year</label>
                         <select id="sel-year" onchange="onFilterChange()" class="w-full p-2 border rounded-lg bg-slate-50 font-bold text-xs text-slate-700">
                             <option value="2025">2025</option>
-                            <option value="2026" selected>2026</option>
+                            <option value="2026">2026</option>
                             <option value="2027">2027</option>
                             <option value="2028">2028</option>
-                            <option value="2029">2029</option>
-                            <option value="2030">2030</option>
-                            <option value="2031">2031</option>
-                            <option value="2032">2032</option>
                         </select>
                     </div>
                     <div>
@@ -106,7 +102,7 @@
                             <option value="0">January</option>
                             <option value="1">February</option>
                             <option value="2">March</option>
-                            <option value="3" selected>April</option>
+                            <option value="3">April</option>
                             <option value="4">May</option>
                             <option value="5">June</option>
                             <option value="6">July</option>
@@ -172,6 +168,7 @@
 
                 </div>
 
+                <!-- COMMIT PORTAL -->
                 <button onclick="commitPortalValues()" class="w-full py-2.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded-xl font-bold shadow transition flex items-center justify-center space-x-2 text-xs">
                     <i class="fa-solid fa-cloud-arrow-up"></i> <span>Save & Live Synchronize Grid</span>
                 </button>
@@ -296,7 +293,7 @@
                     <div class="h-56"><canvas id="chartAnnualVectorTrend"></canvas></div>
                 </div>
 
-                <!-- SLIDE 21: RABIES VACCINATION CENTERS MAP CARD ARTIFACT -->
+                <!-- MAP LAYER -->
                 <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
                     <div class="flex justify-between items-center border-b pb-2">
                         <div>
@@ -305,18 +302,11 @@
                         </div>
                         <span class="text-[9px] bg-indigo-50 text-indigo-700 font-bold px-2 py-0.5 rounded font-mono">SLIDE 21 GEO-VISUAL</span>
                     </div>
-                    <!-- GEOSPATIAL MAP WRAPPER -->
                     <div class="w-full border rounded-xl overflow-hidden shadow-inner bg-slate-100 flex items-center justify-center relative p-2 group transition">
-                        <img src="rabies_map.png" alt="Slide 21 - Rabies Vaccination Centers Density Buffer Map Layout" class="w-full h-auto rounded-lg max-h-[450px] object-contain transition group-hover:scale-[1.01]" onerror="this.style.display='none'; document.getElementById('map-placeholder').style.display='flex';">
-                        
+                        <img src="rabies_map.png" alt="Map Layout" class="w-full h-auto rounded-lg max-h-[450px] object-contain transition group-hover:scale-[1.01]" onerror="this.style.display='none'; document.getElementById('map-placeholder').style.display='flex';">
                         <div id="map-placeholder" class="hidden w-full h-64 flex-col items-center justify-center text-center p-6 space-y-2">
-                            <div class="w-12 h-12 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600 text-xl animate-pulse">
-                                <i class="fa-solid fa-earth-asia"></i>
-                            </div>
-                            <div>
-                                <h6 class="font-bold text-slate-700 text-xs uppercase">Slide 21 Map Overlay Component Ready</h6>
-                                <p class="text-[11px] text-slate-400 max-w-sm mt-0.5 mx-auto">To show the density map, extract the সිතියම image from Slide 21, name it <span class="font-mono bg-slate-200 px-1 rounded text-slate-600 font-bold">rabies_map.png</span> and place it in your local folder!</p>
-                            </div>
+                            <div class="w-12 h-12 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600 text-xl animate-pulse"><i class="fa-solid fa-earth-asia"></i></div>
+                            <h6 class="font-bold text-slate-700 text-xs uppercase">Slide 21 Map Overlay Component Ready</h6>
                         </div>
                     </div>
                 </div>
@@ -326,12 +316,11 @@
         </main>
     </div>
 
-    <!-- ☁️ GOOGLE FIREBASE CLOUD CORE STABILIZER CDN -->
+    <!-- ☁ ================== SCRIPTS CORE ================== -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
-        // ☁️ FIREBASE MASTER INFRASTRUCTURE INTEGRATION MATRIX
         const firebaseConfig = {
             apiKey: "AIzaSyDbaDrXNoam9yEXXt-Q4oM_NieWsVH0AiM",
             authDomain: "phi-command-center.firebaseapp.com",
@@ -345,7 +334,6 @@
         let isCloudActive = false;
         let cloudDb = null;
 
-        // REALTIME SAFE BOUND EXECUTION LAYER
         try {
             if (!firebase.apps.length) {
                 firebase.initializeApp(firebaseConfig);
@@ -363,7 +351,6 @@
 
         const MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
         
-        // Dynamic baseline structural presentations matrices mapping slide values[cite: 6]
         const localBaselineData = Array.from({length: 12}, (_, idx) => {
             return {
                 d_visit: idx===0 ? 134 : (idx===1 ? 128 : (idx===2 ? 108 : (idx===3 ? 98 : 0))), 
@@ -387,17 +374,6 @@
         let chartDenInstance = null;
         let chartRabInstance = null;
         let chartAnnualInstance = null;
-
-        function getOrCreateYearRecord(year, monthIdx) {
-            if (!systemData.vector_v1[year]) {
-                systemData.vector_v1[year] = Array.from({length: 12}, () => ({
-                    d_visit: 0, d_shram: 0, d_notice: 0, d_pros: 0, d_insp: 0, d_wet: 0,
-                    l_doxy: 0, l_he: 0, l_kanna: 0,
-                    r_pop: 10673, r_cent: 0, r_days: 0, r_dog: 0, r_stray: 0
-                }));
-            }
-            return systemData.vector_v1[year][monthIdx];
-        }
 
         function onFilterChange() {
             const year = document.getElementById('sel-year').value;
@@ -485,6 +461,59 @@
             updateVectorCharts(record, targetDogs, year);
         }
 
+        function commitPortalValues() {
+            const year = document.getElementById('sel-year').value;
+            const monthIdx = parseInt(document.getElementById('sel-month').value);
+
+            const d_visit = parseInt(document.getElementById('inp-den-visit').value) || 0;
+            const d_insp = parseInt(document.getElementById('inp-den-insp').value) || 0;
+            const d_wet = parseInt(document.getElementById('inp-den-wet').value) || 0;
+            const d_notice = parseInt(document.getElementById('inp-den-notice').value) || 0;
+            const d_pros = parseInt(document.getElementById('inp-den-pros').value) || 0;
+
+            if (d_visit > d_insp) {
+                alert("⚠️ Validation Error: Home visits conducted cannot exceed total vector premises inspected.");
+                return;
+            }
+            if (d_notice + d_pros > d_insp) {
+                alert("⚠️ Validation Error: Combined statutory enforcements cannot exceed total premises inspected.");
+                return;
+            }
+
+            currentYearData[monthIdx] = {
+                d_visit: d_visit,
+                d_shram: parseInt(document.getElementById('inp-den-shram').value) || 0,
+                d_notice: d_notice,
+                d_pros: d_pros,
+                d_insp: d_insp,
+                d_wet: d_wet,
+                l_doxy: parseInt(document.getElementById('inp-lep-doxy').value) || 0,
+                l_he: parseInt(document.getElementById('inp-lep-he').value) || 0,
+                l_kanna: parseInt(document.getElementById('inp-lep-kanna').value) || 0,
+                r_pop: parseInt(document.getElementById('inp-rab-pop').value) || 0,
+                r_cent: parseInt(document.getElementById('inp-rab-cent').value) || 0,
+                r_days: parseInt(document.getElementById('inp-rab-days').value) || 0,
+                r_dog: parseInt(document.getElementById('inp-rab-dog').value) || 0,
+                r_stray: parseInt(document.getElementById('inp-rab-stray').value) || 0
+            };
+
+            localStorage.setItem(`phi_vector_local_${year}`, JSON.stringify(currentYearData));
+
+            if (isCloudActive) {
+                cloudDb.ref(`vector_v2/${year}`).set(currentYearData).then(() => {
+                    alert(`🚀 Cloud Sync Complete: Vector and Zoonotic datasets committed live to online matrix!`);
+                    onFilterChange();
+                }).catch((err) => {
+                    console.error(err);
+                    alert(`🛡️ Offline Mode Safe: Local node data compiled successfully.`);
+                    onFilterChange();
+                });
+            } else {
+                alert(`🛡️ Offline Mode Safe: Dynamic vector variables saved.`);
+                onFilterChange();
+            }
+        }
+
         function updateVectorCharts(record, targetDogs, year) {
             const ctx1 = document.getElementById('chartLocalDengue').getContext('2d');
             if(chartDenInstance) chartDenInstance.destroy();
@@ -530,60 +559,6 @@
                 },
                 options: { responsive: true, maintainAspectRatio: false, scales: { y: { min: 0, beginAtZero: true } }, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12 } } } }
             });
-        }
-
-        function commitPortalValues() {
-            const year = document.getElementById('sel-year').value;
-            const monthIdx = parseInt(document.getElementById('sel-month').value);
-
-            const d_visit = parseInt(document.getElementById('inp-den-visit').value) || 0;
-            const d_insp = parseInt(document.getElementById('inp-den-insp').value) || 0;
-            const d_wet = parseInt(document.getElementById('inp-den-wet').value) || 0;
-            const d_notice = parseInt(document.getElementById('inp-den-notice').value) || 0;
-            const d_pros = parseInt(document.getElementById('inp-den-pros').value) || 0;
-
-            if (d_visit > d_insp) {
-                alert("⚠️ Validation Error: Home visits conducted cannot exceed total vector premises inspected.");
-                return;
-            }
-            if (d_notice + d_pros > d_insp) {
-                alert("⚠️ Validation Error: Combined statutory enforcements cannot exceed total premises inspected.");
-                return;
-            }
-
-            currentYearData[monthIdx] = {
-                d_visit: d_visit,
-                d_shram: parseInt(document.getElementById('inp-den-shram').value) || 0,
-                d_notice: d_notice,
-                d_pros: d_pros,
-                d_insp: d_insp,
-                d_wet: d_wet,
-                l_doxy: parseInt(document.getElementById('inp-lep-doxy').value) || 0,
-                l_he: parseInt(document.getElementById('inp-lep-he').value) || 0,
-                l_kanna: parseInt(document.getElementById('inp-lep-kanna').value) || 0,
-                r_pop: parseInt(document.getElementById('inp-rab-pop').value) || 0,
-                r_cent: parseInt(document.getElementById('inp-rab-cent').value) || 0,
-                r_days: parseInt(document.getElementById('inp-rab-days').value) || 0,
-                r_dog: parseInt(document.getElementById('inp-rab-dog').value) || 0,
-                r_stray: parseInt(document.getElementById('inp-rab-stray').value) || 0
-            };
-
-            // STORAGE CONFIG PIPELINES
-            localStorage.setItem(`phi_vector_local_${year}`, JSON.stringify(currentYearData));
-
-            if (isCloudActive) {
-                cloudDb.ref(`vector_v2/${year}`).set(currentYearData).then(() => {
-                    alert(`🚀 Cloud Sync Complete: Vector and Zoonotic datasets committed live to online matrix!`);
-                    onFilterChange();
-                }).catch((err) => {
-                    console.error(err);
-                    alert(`🛡️ Offline Mode Safe: Local node data compiled successfully.`);
-                    onFilterChange();
-                });
-            } else {
-                alert(`🛡️ Offline Mode Safe: Dynamic vector variables saved.`);
-                onFilterChange();
-            }
         }
 
         window.onload = function() {

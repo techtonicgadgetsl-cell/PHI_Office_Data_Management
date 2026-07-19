@@ -84,13 +84,9 @@
                         <label class="text-[10px] uppercase font-black text-slate-400 block mb-1">Target Year</label>
                         <select id="sel-year" onchange="onFilterChange()" class="w-full p-2 border rounded-lg bg-slate-50 font-bold text-xs text-slate-700">
                             <option value="2025">2025</option>
-                            <option value="2026" selected>2026</option>
+                            <option value="2026">2026</option>
                             <option value="2027">2027</option>
                             <option value="2028">2028</option>
-                            <option value="2029">2029</option>
-                            <option value="2030">2030</option>
-                            <option value="2031">2031</option>
-                            <option value="2032">2032</option>
                         </select>
                     </div>
                     <div>
@@ -99,7 +95,7 @@
                             <option value="0">January</option>
                             <option value="1">February</option>
                             <option value="2">March</option>
-                            <option value="3" selected>April</option>
+                            <option value="3">April</option>
                             <option value="4">May</option>
                             <option value="5">June</option>
                             <option value="6">July</option>
@@ -115,7 +111,7 @@
                 <hr class="border-slate-100">
 
                 <div id="portal-fields-container" class="space-y-4 max-h-[60vh] overflow-y-auto custom-scrollbar pr-1 text-xs">
-                    </div>
+                </div>
 
                 <button onclick="commitPortalValues()" class="w-full py-2.5 bg-indigo-700 hover:bg-indigo-600 text-white rounded-xl font-bold shadow transition flex items-center justify-center space-x-2 text-xs">
                     <i class="fa-solid fa-cloud-arrow-up"></i> <span>Save & Live Update Grid</span>
@@ -143,7 +139,7 @@
                                 </tr>
                             </thead>
                             <tbody id="tbody-education-matrix" class="divide-y divide-slate-200 bg-white font-bold text-slate-700">
-                                </tbody>
+                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -169,12 +165,10 @@
         </main>
     </div>
 
-    <!-- ☁️ GOOGLE FIREBASE CLOUD CORE STABILIZER CDN -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
-        // ☁️ FIREBASE MASTER CONFIG INTEGRATION MATRIX
         const firebaseConfig = {
             apiKey: "AIzaSyDbaDrXNoam9yEXXt-Q4oM_NieWsVH0AiM",
             authDomain: "phi-command-center.firebaseapp.com",
@@ -188,7 +182,6 @@
         let isCloudActive = false;
         let cloudDb = null;
 
-        // SAFE RUNTIME STABILIZER LAYER
         try {
             if (!firebase.apps.length) {
                 firebase.initializeApp(firebaseConfig);
@@ -214,7 +207,6 @@
             "5. Others"
         ];
 
-        // Mapped slide properties configurations cache[cite: 8]
         const localBaselineData = Array.from({length: 12}, (_, idx) => {
             let isApril = idx === 3;
             return {
@@ -386,7 +378,6 @@
 
             currentYearData[monthIdx] = { matrix: compiledMatrix };
 
-            // PERSIST PARAMETERS LOCALLY
             localStorage.setItem(`phi_edu_local_${year}`, JSON.stringify(currentYearData));
 
             if (isCloudActive) {
@@ -404,10 +395,22 @@
             }
         }
 
+        // 📍 UPGRADED: Dynamic Previous Month Selector Engine Sync
         window.onload = function() {
             buildPortalFieldsLayout();
-            document.getElementById('sel-year').value = "2026";
-            document.getElementById('sel-month').value = "3"; // Focus April initial framework[cite: 8]
+
+            const currentSystemDate = new Date();
+            let previousMonthIdx = currentSystemDate.getMonth() - 1;
+            let targetYear = currentSystemDate.getFullYear();
+
+            if (previousMonthIdx < 0) {
+                previousMonthIdx = 11;
+                targetYear = targetYear - 1;
+            }
+
+            if(document.getElementById('sel-year')) document.getElementById('sel-year').value = targetYear.toString();
+            if(document.getElementById('sel-month')) document.getElementById('sel-month').value = previousMonthIdx.toString();
+
             onFilterChange();
         };
     </script>

@@ -109,17 +109,15 @@
                         <div>
                             <label class="text-[9px] uppercase font-black text-slate-400 block mb-0.5">Target Year</label>
                             <select id="sel-year" onchange="onFilterChange()" class="w-full p-1.5 border rounded-lg bg-slate-50 font-bold text-xs text-slate-700">
-                                <option value="2025">2025</option><option value="2026" selected>2026</option>
+                                <option value="2025">2025</option><option value="2026">2026</option>
                                 <option value="2027">2027</option><option value="2028">2028</option>
-                                <option value="2029">2029</option><option value="2030">2030</option>
-                                <option value="2031">2031</option><option value="2032">2032</option>
                             </select>
                         </div>
                         <div>
                             <label class="text-[9px] uppercase font-black text-slate-400 block mb-0.5">Target Month</label>
                             <select id="sel-month" onchange="onFilterChange()" class="w-full p-1.5 border rounded-lg bg-slate-50 font-bold text-xs text-slate-700">
                                 <option value="0">January</option><option value="1">February</option>
-                                <option value="2">March</option><option value="3" selected>April</option>
+                                <option value="2">March</option><option value="3">April</option>
                                 <option value="4">May</option><option value="5">June</option>
                                 <option value="6">July</option><option value="7">August</option>
                                 <option value="8">September</option><option value="9">October</option>
@@ -246,7 +244,6 @@
                                 </tr>
                             </thead>
                             <tbody id="tbody-vaccination-timeline" class="divide-y divide-slate-100 bg-white font-semibold text-slate-700">
-                                <!-- 📍 FIXED: Months rows render perfectly here via Javascript row generation -->
                             </tbody>
                         </table>
                     </div>
@@ -281,7 +278,6 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
-        // ☁️ FIREBASE INFRASTRUCTURE CONFIG SEED
         const firebaseConfig = {
             apiKey: "AIzaSyDbaDrXNoam9yEXXt-Q4oM_NieWsVH0AiM",
             authDomain: "phi-command-center.firebaseapp.com",
@@ -320,12 +316,11 @@
 
         let currentYearData = Array.from({length: 12}, () => ({}));
 
-        // Inoculate presentation benchmarks framework defaults setup mapping[cite: 1]
         registeredSchools.forEach(school => {
             currentYearData[0][school] = generateCleanSchoolObject();
             currentYearData[1][school] = generateCleanSchoolObject();
             currentYearData[2][school] = generateCleanSchoolObject();
-            currentYearData[3][school] = generateCleanSchoolObject(); // April[cite: 1]
+            currentYearData[3][school] = generateCleanSchoolObject(); 
 
             if(school === "Menikdiwela Central") {
                 currentYearData[3][school] = { smi_status: "Complete", atd_students: 60, atd_given: 55, atd_other: 5, hpv_students: 45, hpv_d1: 42, hpv_d2: 40, hp_repro: 1, hp_skills: 1, hp_ncd: 1, hp_nutr: 1, def_vis: 14, corr_vis: 10, def_hear: 2, corr_hear: 1, def_heart: 1, corr_heart: 1, def_dent: 35, corr_dent: 12 };
@@ -508,7 +503,6 @@
             updateVisualGraphsCharts(totalHeartDef, totalHeartCorr, totalVisDef, totalVisCorr, totalHearDef, totalHearCorr, year, monthIdx);
         }
 
-        // 📍 FIXED TIMELINE GENERATOR: Renders perfectly inside table structures row-by-row
         function renderVaccinationTimelineTable() {
             let timelineHtml = '';
             let cumulativeAtdGiven = 0, cumulativeAtdStudents = 0;
@@ -666,7 +660,6 @@
                 corr_dent: parseInt(document.getElementById('inp-corr-dent').value) || 0
             };
 
-            // PERSIST PARAMETERS LOCALLY
             localStorage.setItem(`phi_school_local_${year}`, JSON.stringify(currentYearData));
 
             if(isCloudActive) {
@@ -684,9 +677,23 @@
             }
         }
 
+        // 📍 UPGRADED: Dynamic Previous Month Selector Engine Sync
         window.onload = function() {
-            document.getElementById('sel-year').value = "2026";
-            document.getElementById('sel-month').value = "3"; // Focus April
+            renderRegistryBadges();
+            populateSchoolSelectOptions();
+
+            const currentSystemDate = new Date();
+            let previousMonthIdx = currentSystemDate.getMonth() - 1;
+            let targetYear = currentSystemDate.getFullYear();
+
+            if (previousMonthIdx < 0) {
+                previousMonthIdx = 11;
+                targetYear = targetYear - 1;
+            }
+
+            if(document.getElementById('sel-year')) document.getElementById('sel-year').value = targetYear.toString();
+            if(document.getElementById('sel-month')) document.getElementById('sel-month').value = previousMonthIdx.toString();
+
             onFilterChange();
         };
     </script>

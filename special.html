@@ -90,20 +90,16 @@
                         <label class="text-[10px] uppercase font-black text-slate-400 block mb-1">Target Year</label>
                         <select id="sel-year" onchange="onFilterChange()" class="w-full p-2 border rounded-lg bg-slate-50 font-bold text-xs text-slate-700">
                             <option value="2025">2025</option>
-                            <option value="2026" selected>2026</option>
+                            <option value="2026">2026</option>
                             <option value="2027">2027</option>
                             <option value="2028">2028</option>
-                            <option value="2029">2029</option>
-                            <option value="2030">2030</option>
-                            <option value="2031">2031</option>
-                            <option value="2032">2032</option>
                         </select>
                     </div>
                     <div>
                         <label class="text-[10px] uppercase font-black text-slate-400 block mb-1">Target Month</label>
                         <select id="sel-month" onchange="onFilterChange()" class="w-full p-2 border rounded-lg bg-slate-50 font-bold text-xs text-slate-700">
                             <option value="0">January</option><option value="1">February</option>
-                            <option value="2">March</option><option value="3" selected>April</option>
+                            <option value="2">March</option><option value="3">April</option>
                             <option value="4">May</option><option value="5">June</option>
                             <option value="6">July</option><option value="7">August</option>
                             <option value="8">September</option><option value="9">October</option>
@@ -424,9 +420,20 @@
             }
         }
 
+        // 📍 UPGRADED: Dynamic Previous Month Selector Engine Sync
         window.onload = function() {
-            document.getElementById('sel-year').value = "2026";
-            document.getElementById('sel-month').value = "3"; // Focus April Context Node
+            const currentSystemDate = new Date();
+            let previousMonthIdx = currentSystemDate.getMonth() - 1;
+            let targetYear = currentSystemDate.getFullYear();
+
+            if (previousMonthIdx < 0) {
+                previousMonthIdx = 11;
+                targetYear = targetYear - 1;
+            }
+
+            if(document.getElementById('sel-year')) document.getElementById('sel-year').value = targetYear.toString();
+            if(document.getElementById('sel-month')) document.getElementById('sel-month').value = previousMonthIdx.toString();
+
             onFilterChange();
         };
     </script>

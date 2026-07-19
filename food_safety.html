@@ -84,13 +84,9 @@
                         <label class="text-[10px] uppercase font-black text-slate-400 block mb-1">Target Year</label>
                         <select id="sel-year" onchange="onFilterChange()" class="w-full p-2 border rounded-lg bg-slate-50 font-bold text-xs text-slate-700">
                             <option value="2025">2025</option>
-                            <option value="2026" selected>2026</option>
+                            <option value="2026">2026</option>
                             <option value="2027">2027</option>
                             <option value="2028">2028</option>
-                            <option value="2029">2029</option>
-                            <option value="2030">2030</option>
-                            <option value="2031">2031</option>
-                            <option value="2032">2032</option>
                         </select>
                     </div>
                     <div>
@@ -119,7 +115,7 @@
                     <div class="p-3 bg-slate-50 rounded-xl border space-y-3">
                         <p class="text-[10px] font-black text-slate-500 uppercase tracking-wider"><i class="fa-solid fa-hotel mr-1 text-teal-600"></i>Slide 35: H800 Establishment Grid</p>
                         <div id="portal-categories-container" class="space-y-4 divide-y divide-slate-200">
-                            </div>
+                        </div>
                     </div>
 
                     <div class="p-3 bg-teal-50/40 border border-teal-100 rounded-xl space-y-2.5">
@@ -170,7 +166,7 @@
                                 </tr>
                             </thead>
                             <tbody id="tbody-food-establishments" class="divide-y divide-slate-100">
-                                </tbody>
+                            </tbody>
                         </table>
                     </div>
 
@@ -223,12 +219,10 @@
         </main>
     </div>
 
-    <!-- ☁️ GOOGLE FIREBASE CORE INTERREACTION CDN -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
-        // ☁️ FIREBASE INFRASTRUCTURE CONFIG SEED
         const firebaseConfig = {
             apiKey: "AIzaSyDbaDrXNoam9yEXXt-Q4oM_NieWsVH0AiM",
             authDomain: "phi-command-center.firebaseapp.com",
@@ -242,7 +236,6 @@
         let isCloudActive = false;
         let cloudDb = null;
 
-        // REALTIME SECURE RUNTIME COMPATIBILITY LAYER
         try {
             if (!firebase.apps.length) {
                 firebase.initializeApp(firebaseConfig);
@@ -274,7 +267,6 @@
             "Others"
         ];
 
-        // Slide 35 presentation raw data arrays model
         const localBaselineData = Array.from({length: 12}, (_, idx) => {
             let isActiveTimeline = idx <= 3;
             return {
@@ -343,7 +335,7 @@
             document.getElementById('portal-categories-container').innerHTML = html;
         }
 
-        function calcRowTotal(rowIdx) {
+        function toggleRowTotal(rowIdx) {
             let a = parseInt(document.getElementById(`inp-mat-${rowIdx}-1`).value) || 0;
             let b = parseInt(document.getElementById(`inp-mat-${rowIdx}-2`).value) || 0;
             let c = parseInt(document.getElementById(`inp-mat-${rowIdx}-3`).value) || 0;
@@ -535,7 +527,6 @@
                 raid_fines: parseInt(document.getElementById('inp-raid-fines').value) || 0
             };
 
-            // SYNC PERSISTENCE STATS
             localStorage.setItem(`phi_food_local_${year}`, JSON.stringify(currentYearData));
 
             if (isCloudActive) {
@@ -553,10 +544,22 @@
             }
         }
 
+        // 📍 UPGRADED: Dynamic Previous Month Selector Engine Sync
         window.onload = function() {
             buildPortalSkeleton();
-            document.getElementById('sel-year').value = "2026";
-            document.getElementById('sel-month').value = "3"; // April Context focus
+
+            const currentSystemDate = new Date();
+            let previousMonthIdx = currentSystemDate.getMonth() - 1;
+            let targetYear = currentSystemDate.getFullYear();
+
+            if (previousMonthIdx < 0) {
+                previousMonthIdx = 11;
+                targetYear = targetYear - 1;
+            }
+
+            if(document.getElementById('sel-year')) document.getElementById('sel-year').value = targetYear.toString();
+            if(document.getElementById('sel-month')) document.getElementById('sel-month').value = previousMonthIdx.toString();
+
             onFilterChange();
         };
     </script>

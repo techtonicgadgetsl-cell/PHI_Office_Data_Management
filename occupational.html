@@ -84,20 +84,16 @@
                         <label class="text-[10px] uppercase font-black text-slate-400 block mb-1">Target Year</label>
                         <select id="sel-year" onchange="onFilterChange()" class="w-full p-2 border rounded-lg bg-slate-50 font-bold text-xs text-slate-700">
                             <option value="2025">2025</option>
-                            <option value="2026" selected>2026</option>
+                            <option value="2026">2026</option>
                             <option value="2027">2027</option>
                             <option value="2028">2028</option>
-                            <option value="2029">2029</option>
-                            <option value="2030">2030</option>
-                            <option value="2031">2031</option>
-                            <option value="2032">2032</option>
                         </select>
                     </div>
                     <div>
                         <label class="text-[10px] uppercase font-black text-slate-400 block mb-1">Target Month</label>
                         <select id="sel-month" onchange="onFilterChange()" class="w-full p-2 border rounded-lg bg-slate-50 font-bold text-xs text-slate-700">
                             <option value="0">January</option><option value="1">February</option>
-                            <option value="2">March</option><option value="3" selected>April</option>
+                            <option value="2">March</option><option value="3">April</option>
                             <option value="4">May</option><option value="5">June</option>
                             <option value="6">July</option><option value="7">August</option>
                             <option value="8">September</option><option value="9">October</option>
@@ -126,7 +122,7 @@
 
                 <div class="space-y-4 max-h-[45vh] overflow-y-auto custom-scrollbar pr-1 text-xs">
                     <div id="portal-scales-container" class="space-y-4 divide-y divide-slate-100">
-                        </div>
+                    </div>
                 </div>
 
                 <button onclick="commitPortalValues()" class="w-full py-2.5 bg-amber-700 hover:bg-amber-600 text-white rounded-xl font-bold shadow transition flex items-center justify-center space-x-2 text-xs">
@@ -259,7 +255,6 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
-        // ☁️ FIREBASE MASTER CONFIG INTEGRATION MATRIX
         const firebaseConfig = {
             apiKey: "AIzaSyDbaDrXNoam9yEXXt-Q4oM_NieWsVH0AiM",
             authDomain: "phi-command-center.firebaseapp.com",
@@ -267,7 +262,7 @@
             storageBucket: "phi-command-center.firebasestorage.app",
             messagingSenderId: "20519691267",
             appId: "1:20519691267:web:c4018461a5d92d58919a36",
-            databaseURL: "https://phi-command-center-default-rtdb.firebaseio.com" // 📍 Live Database Activated!
+            databaseURL: "https://phi-command-center-default-rtdb.firebaseio.com"
         };
 
         let isCloudActive = false;
@@ -291,20 +286,18 @@
         const MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
         const SCALES_LABELS = ["Large Scale", "Medium Scale", "Small Scale", "Informal Sector", "Gov Sector"];
 
-        // Dynamic factories baseline cache arrays
-        let globalBaseFactoriesRegistry = [0, 0, 8, 0, 0]; // Default Poththapitiya Small scale = 8 from slides
+        let globalBaseFactoriesRegistry = [0, 0, 8, 0, 0];
 
         const localBaselineData = Array.from({length: 12}, (_, idx) => {
             let isApril = idx === 3;
             return {
-                // Points 2 to 7 monthly transactional matrices
                 matrix: [
-                    [0, 0, isApril ? 1 : 0, 0, 0], // 2. Inspected
-                    [0, 0, isApril ? 1 : 0, 0, 0], // 3. Health Issues
-                    [0, 0, 0, 0, 0],               // 4. Referred
-                    [0, 0, isApril ? 1 : 0, 0, 0], // 5. Corrected
-                    [0, 0, 0, 0, 0],               // 6. Complaints
-                    [0, 0, 0, 0, 0]                // 7. Resolved
+                    [0, 0, isApril ? 1 : 0, 0, 0],
+                    [0, 0, isApril ? 1 : 0, 0, 0],
+                    [0, 0, 0, 0, 0],
+                    [0, 0, isApril ? 1 : 0, 0, 0],
+                    [0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0]
                 ]
             };
         });
@@ -359,12 +352,10 @@
             document.getElementById('lbl-context').innerText = "LOAD...";
 
             if (isCloudActive) {
-                // ☁️ READ FACTORIES REGISTRY CONFIG NODE LIVE FROM CLOUD
                 cloudDb.ref('occupational_base_registry').once('value').then((baseSnapshot) => {
                     let baseData = baseSnapshot.val();
                     if(baseData) globalBaseFactoriesRegistry = baseData;
 
-                    // Read routine transaction parameters
                     return cloudDb.ref(`occupational_v4/${year}`).once('value');
                 }).then((snapshot) => {
                     let data = snapshot.val();
@@ -400,23 +391,20 @@
         function renderDataUI(monthIdx, year) {
             const record = currentYearData[monthIdx] || { matrix: Array.from({length: 6}, () => [0,0,0,0,0]) };
 
-            // Render 1. Persistent Factories Baseline Registry
             globalBaseFactoriesRegistry.forEach((val, i) => {
                 document.getElementById(`inp-base-${i+1}`).value = val;
                 document.getElementById(`td-base-${i+1}`).innerText = val;
             });
 
-            // Populate forms fields points 2-7
             SCALES_LABELS.forEach((_, sIdx) => {
                 let colNum = sIdx + 1;
-                for(let r=1; r<7; r++) {
+                for(let r=1; r<=6; r++) {
                     document.getElementById(`inp-m-${r}-${colNum}`).value = record.matrix[r-1][sIdx];
                 }
             });
 
             document.getElementById('lbl-context').innerText = `${MONTH_NAMES[monthIdx].toUpperCase()} ${year}`;
             
-            // Sync Live Table Board
             SCALES_LABELS.forEach((_, sIdx) => {
                 let colNum = sIdx + 1;
                 for(let r=2; r<=7; r++) {
@@ -427,7 +415,6 @@
             updateOccupationalCharts(record);
         }
 
-        // 📍 UPGRADE: PERSISTENT FACTORIES BASELINE SUB-SYSTEM WRITER
         function commitBaseFactoriesRegistry() {
             let baseData = [];
             for(let i=1; i<=5; i++) {
@@ -439,7 +426,7 @@
 
             if(isCloudActive) {
                 cloudDb.ref('occupational_base_registry').set(globalBaseFactoriesRegistry).then(() => {
-                    alert("🚀 Cloud Base Registry Updated successfully! Displays locked permanently across all timeline transits.");
+                    alert("🚀 Cloud Base Registry Updated successfully!");
                     onFilterChange();
                 });
             } else {
@@ -511,7 +498,6 @@
                 }
             });
 
-            // STRICT STATUTORY CEILING SECURITY CHECKS
             for(let c=0; c<5; c++) {
                 if(matrixData[0][c] > globalBaseFactoriesRegistry[c]) {
                     alert(`⚠️ Validation Error in Column ${c+1}: Inspected count cannot exceed persistent factories baseline registry (${globalBaseFactoriesRegistry[c]}).`);
@@ -529,7 +515,6 @@
 
             currentYearData[monthIdx] = { matrix: matrixData };
 
-            // PERSIST TRANSACTIONS LOGS LOCALLY
             localStorage.setItem(`phi_occupational_local_${year}`, JSON.stringify(currentYearData));
 
             if (isCloudActive) {
@@ -547,10 +532,22 @@
             }
         }
 
+        // 📍 UPGRADED: Dynamic Previous Month Selector Engine Sync
         window.onload = function() {
             buildPortalWorkspaceLayout();
-            document.getElementById('sel-year').value = "2026";
-            document.getElementById('sel-month').value = "3"; // Focus April
+
+            const currentSystemDate = new Date();
+            let previousMonthIdx = currentSystemDate.getMonth() - 1;
+            let targetYear = currentSystemDate.getFullYear();
+
+            if (previousMonthIdx < 0) {
+                previousMonthIdx = 11;
+                targetYear = targetYear - 1;
+            }
+
+            if(document.getElementById('sel-year')) document.getElementById('sel-year').value = targetYear.toString();
+            if(document.getElementById('sel-month')) document.getElementById('sel-month').value = previousMonthIdx.toString();
+
             onFilterChange();
         };
     </script>

@@ -91,13 +91,9 @@
                         <label class="text-[10px] uppercase font-black text-slate-400 block mb-1">Target Year</label>
                         <select id="sel-year" onchange="onFilterChange()" class="w-full p-2 border rounded-lg bg-slate-50 font-bold text-xs text-slate-700">
                             <option value="2025">2025</option>
-                            <option value="2026" selected>2026</option>
+                            <option value="2026">2026</option>
                             <option value="2027">2027</option>
                             <option value="2028">2028</option>
-                            <option value="2029">2029</option>
-                            <option value="2030">2030</option>
-                            <option value="2031">2031</option>
-                            <option value="2032">2032</option>
                         </select>
                     </div>
                     <div>
@@ -106,7 +102,7 @@
                             <option value="0">January</option>
                             <option value="1">February</option>
                             <option value="2">March</option>
-                            <option value="3" selected>April</option>
+                            <option value="3">April</option>
                             <option value="4">May</option>
                             <option value="5">June</option>
                             <option value="6">July</option>
@@ -215,7 +211,6 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
-        // ☁️ FIREBASE CONFIG WITH DATABASE URL INCLUDED[cite: 1]
         const firebaseConfig = {
             apiKey: "AIzaSyDbaDrXNoam9yEXXt-Q4oM_NieWsVH0AiM",
             authDomain: "phi-command-center.firebaseapp.com",
@@ -223,13 +218,12 @@
             storageBucket: "phi-command-center.firebasestorage.app",
             messagingSenderId: "20519691267",
             appId: "1:20519691267:web:c4018461a5d92d58919a36",
-            databaseURL: "https://phi-command-center-default-rtdb.firebaseio.com" // 📍 FIXED MISSING URL[cite: 1]
+            databaseURL: "https://phi-command-center-default-rtdb.firebaseio.com"
         };
 
         let isCloudActive = false;
         let cloudDb = null;
 
-        // SAFE CLOUD INITIALIZATION SHIELD
         try {
             if (!firebase.apps.length) {
                 firebase.initializeApp(firebaseConfig);
@@ -247,12 +241,11 @@
 
         const MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
         
-        // Poththapitiya 2026 Presentation Base Records Data[cite: 1]
         const localBaselineData = [
-            { schools: 4, h1014_m: 4, h631_m: 1, h1015a_y: 4, h1247_y: 4 }, // Jan[cite: 1]
-            { schools: 4, h1014_m: 4, h631_m: 1, h1015a_y: 4, h1247_y: 4 }, // Feb[cite: 1]
-            { schools: 4, h1014_m: 4, h631_m: 1, h1015a_y: 4, h1247_y: 0 }, // Mar[cite: 1]
-            { schools: 4, h1014_m: 4, h631_m: 1, h1015a_y: 4, h1247_y: 4 }, // Apr[cite: 1]
+            { schools: 4, h1014_m: 4, h631_m: 1, h1015a_y: 4, h1247_y: 4 },
+            { schools: 4, h1014_m: 4, h631_m: 1, h1015a_y: 4, h1247_y: 4 },
+            { schools: 4, h1014_m: 4, h631_m: 1, h1015a_y: 4, h1247_y: 0 },
+            { schools: 4, h1014_m: 4, h631_m: 1, h1015a_y: 4, h1247_y: 4 },
             { schools: 4, h1014_m: 0, h631_m: 0, h1015a_y: 0, h1247_y: 0 },
             { schools: 4, h1014_m: 0, h631_m: 0, h1015a_y: 0, h1247_y: 0 },
             { schools: 4, h1014_m: 0, h631_m: 0, h1015a_y: 0, h1247_y: 0 },
@@ -278,7 +271,6 @@
             const monthIdx = parseInt(document.getElementById('sel-month').value);
 
             if (isCloudActive) {
-                // Read via Cloud Firebase
                 cloudDb.ref(`erhmis_v3/${year}`).once('value').then((snapshot) => {
                     let data = snapshot.val();
                     if (data) {
@@ -293,7 +285,6 @@
                     renderDataUI(monthIdx, year);
                 });
             } else {
-                // Read via offline LocalStorage Fallback Shield
                 loadLocalCacheStorage(year);
                 renderDataUI(monthIdx, year);
             }
@@ -311,7 +302,6 @@
         function renderDataUI(monthIdx, year) {
             const record = currentYearData[monthIdx] || { schools: 4, h1014_m: 0, h631_m: 0, h1015a_y: 0, h1247_y: 0 };
 
-            // Populate forms fields
             document.getElementById('inp-schools').value = record.schools;
             document.getElementById('inp-h1014-m').value = record.h1014_m;
             document.getElementById('inp-h631-m').value = record.h631_m;
@@ -320,7 +310,6 @@
 
             updateTargetLabels();
 
-            // Populate summary table data metrics grid boards
             document.getElementById('lbl-table-title').innerText = `Data Grid Summary: ${MONTH_NAMES[monthIdx]} ${year}`;
             document.getElementById('td-context').innerText = `${MONTH_NAMES[monthIdx].substring(0,3).toUpperCase()} ${year}`;
             document.getElementById('td-schools').innerText = record.schools;
@@ -380,7 +369,6 @@
                 schools: schoolsCount, h1014_m: h1014, h631_m: h631, h1015a_y: h1015a, h1247_y: h1247
             };
 
-            // PERSIST DATA PIPELINE
             localStorage.setItem(`phi_erhmis_local_${year}`, JSON.stringify(currentYearData));
 
             if (isCloudActive) {
@@ -398,9 +386,20 @@
             }
         }
 
+        // 📍 UPGRADED: Dynamic Previous Month Selector Engine Sync
         window.onload = function() {
-            document.getElementById('sel-year').value = "2026";
-            document.getElementById('sel-month').value = "3"; // Focus April initial framework
+            const currentSystemDate = new Date();
+            let previousMonthIdx = currentSystemDate.getMonth() - 1;
+            let targetYear = currentSystemDate.getFullYear();
+
+            if (previousMonthIdx < 0) {
+                previousMonthIdx = 11;
+                targetYear = targetYear - 1;
+            }
+
+            if(document.getElementById('sel-year')) document.getElementById('sel-year').value = targetYear.toString();
+            if(document.getElementById('sel-month')) document.getElementById('sel-month').value = previousMonthIdx.toString();
+
             onFilterChange();
         };
     </script>
