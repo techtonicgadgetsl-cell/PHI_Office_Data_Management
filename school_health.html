@@ -227,7 +227,7 @@
                     </div>
                 </div>
 
-                <!-- BOARD 02: HISTORICAL VACCINATION TRACKER TABLE (🎯 UPDATED TO DYNAMIC SCHOOL registry MATRIX AS PER REQUEST) -->
+                <!-- BOARD 02: HISTORICAL VACCINATION TRACKER TABLE -->
                 <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
                     <h4 id="lbl-timeline-title" class="text-xs font-black text-slate-700 uppercase tracking-tight">Division Cumulative Immunization Coverage Timeline (Monthly Tracker)</h4>
                     <div class="overflow-x-auto border rounded-lg shadow-inner max-h-56 custom-scrollbar">
@@ -297,7 +297,6 @@
             document.getElementById('cloud-status-badge').innerText = "☁️ CLOUD ACTIVE";
             document.getElementById('cloud-status-badge').className = "text-xs font-mono bg-emerald-950 px-3 py-1.5 rounded-lg border border-emerald-700 text-emerald-400 font-bold";
         } catch (e) {
-            console.warn("Firebase fallback mode.", e);
             isCloudActive = false;
             document.getElementById('cloud-status-badge').innerText = "🛡️ OFFLINE SAFE MODE";
             document.getElementById('cloud-status-badge').className = "text-xs font-mono bg-amber-950 px-3 py-1.5 rounded-lg border border-amber-700 text-amber-400 font-bold";
@@ -311,8 +310,6 @@
         });
 
         let currentYearData = Array.from({length: 12}, () => ({}));
-
-        // Default Inoculation Framework
         for(let m=0; m<12; m++) {
             registeredSchools.forEach(school => {
                 currentYearData[m][school] = generateCleanSchoolObject();
@@ -376,9 +373,23 @@
             if(registeredSchools.includes(currentSelection)) select.value = currentSelection;
         }
 
+        // 📍 🛡️ TIMEOUT SHIELD: සර්වර් එක කනෙක්ට් වෙන්න බැරුව හිරවුණොත් තත්පර 3කින් ඔටෝමැටිකලිම ලෝකල් එකෙන් වැඩේ ගොඩදාන එන්ජිම
         function onFilterChange() {
             const year = document.getElementById('sel-year').value;
             const monthIdx = parseInt(document.getElementById('sel-month').value);
+
+            let hasLoaded = false;
+
+            // Timeout Trigger Setup
+            const fallbackTimeout = setTimeout(() => {
+                if (!hasLoaded) {
+                    console.warn("Cloud connection timed out. Forcing offline safe matrix fallback.");
+                    isCloudActive = false;
+                    document.getElementById('cloud-status-badge').innerText = "🛡️ OFFLINE SAFE MODE";
+                    document.getElementById('cloud-status-badge').className = "text-xs font-mono bg-amber-950 px-3 py-1.5 rounded-lg border border-amber-700 text-amber-400 font-bold";
+                    loadLocalCacheStorage(year);
+                }
+            }, 3000); // 3 Seconds Guard Shield
 
             if (isCloudActive) {
                 cloudDb.ref('registered_schools_registry_v3').once('value').then((baseSnapshot) => {
@@ -389,6 +400,8 @@
 
                     return cloudDb.ref(`school_health_v3/${year}`).once('value');
                 }).then((snapshot) => {
+                    clearTimeout(fallbackTimeout);
+                    hasLoaded = true;
                     let data = snapshot.val();
                     if (data) {
                         currentYearData = data;
@@ -400,10 +413,12 @@
                     }
                     onActiveSchoolChange();
                 }).catch((err) => {
+                    clearTimeout(fallbackTimeout);
                     console.error(err);
                     loadLocalCacheStorage(year);
                 });
             } else {
+                clearTimeout(fallbackTimeout);
                 loadLocalCacheStorage(year);
             }
         }
@@ -417,6 +432,11 @@
             let localStore = JSON.parse(localStorage.getItem(`phi_school_local_${year}`));
             if (localStore) {
                 currentYearData = localStore;
+            } else {
+                currentYearData = Array.from({length: 12}, () => ({}));
+                for(let m=0; m<12; m++) {
+                    registeredSchools.forEach(s => { currentYearData[m][s] = generateCleanSchoolObject(); });
+                }
             }
             onActiveSchoolChange();
         }
@@ -494,7 +514,6 @@
             updateVisualGraphsCharts(totalHeartDef, totalHeartCorr, totalVisDef, totalVisCorr, totalHearDef, totalHearCorr, year, monthIdx);
         }
 
-        // 🎯 UPGRADED CUMULATIVE ENGINE: පාසලෙන් පාසලට වත්මන් මාසය දක්වා එකතුව (Cumulative Sum) සහ Divisional Grand Total පේළිය සාදන ක්‍රියාවලිය
         function renderVaccinationTimelineTable() {
             const monthIdx = parseInt(document.getElementById('sel-month').value);
             let timelineHtml = '';
@@ -510,7 +529,6 @@
                 let schoolCumHpvStudents = 0;
                 let schoolCumHpvD1 = 0;
 
-                // ජනවාරි (0) සිට දැනට තෝරාගෙන ඇති මාසය (monthIdx) දක්වා දත්ත එකතු කිරීම (Cumulative Matrix)
                 for (let m = 0; m <= monthIdx; m++) {
                     if (currentYearData && currentYearData[m] && currentYearData[m][school]) {
                         let rec = currentYearData[m][school];
@@ -541,7 +559,6 @@
                 grandTotalHpvD1 += schoolCumHpvD1;
             });
 
-            // බෝඩ් එකේ පල්ලෙහායින්ම වැටෙන Divisional Grand Total පේළිය (Grand Summary)
             let grandAtdPct = grandTotalAtdStudents > 0 ? Math.round((grandTotalAtdGiven / grandTotalAtdStudents) * 100) : 0;
             let grandHpvPct = grandTotalHpvStudents > 0 ? Math.round((grandTotalHpvD1 / grandTotalHpvStudents) * 100) : 0;
 
