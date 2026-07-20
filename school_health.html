@@ -137,7 +137,7 @@
                     <!-- SECTIONS FIELD FORM -->
                     <div class="space-y-3 pt-1 max-h-[42vh] overflow-y-auto custom-scrollbar pr-1 text-xs">
                         
-                        <!-- SMI STATUS -->
+                        <!-- SLIDE 26: SMI STATUS MODIFIED -->
                         <div class="p-2.5 bg-slate-50 rounded-lg border">
                             <p class="text-[9px] font-black text-slate-500 uppercase tracking-wider mb-1.5">Slide 26: SMI Status</p>
                             <div>
@@ -149,7 +149,7 @@
                             </div>
                         </div>
 
-                        <!-- aTd MONTHLY FIELDS -->
+                        <!-- SLIDE 27, 28: aTd MONTHLY FIELDS -->
                         <div class="p-2.5 bg-blue-50/40 border border-blue-100 rounded-lg grid grid-cols-2 gap-2">
                             <p class="col-span-2 text-[9px] font-black text-blue-800 uppercase tracking-wider">Slide 27, 28: aTd Grade 07 Metrics</p>
                             <div><label class="font-medium block text-slate-600">Grade 7 Total</label><input type="number" id="inp-atd-students" class="w-full p-1 border rounded bg-white font-bold"></div>
@@ -157,7 +157,7 @@
                             <div class="col-span-2"><label class="font-medium block text-slate-500">aTd Given (Other Grades)</label><input type="number" id="inp-atd-other" class="w-full p-1 border rounded bg-white"></div>
                         </div>
 
-                        <!-- HPV MONTHLY FIELDS -->
+                        <!-- SLIDE 29, 30: HPV MONTHLY FIELDS -->
                         <div class="p-2.5 bg-purple-50/40 border border-purple-100 rounded-lg grid grid-cols-2 gap-2">
                             <p class="col-span-2 text-[9px] font-black text-purple-800 uppercase tracking-wider">Slide 29, 30: HPV Grade 06 Female Metrics</p>
                             <div class="col-span-2"><label class="font-medium block text-slate-600">Grade 6 Female Total</label><input type="number" id="inp-hpv-students" class="w-full p-1 border rounded bg-white font-bold"></div>
@@ -165,7 +165,7 @@
                             <div><label class="font-medium block text-purple-600">HPV Dose 2 Given</label><input type="number" id="inp-hpv-d2" class="w-full p-1 border rounded bg-white font-bold"></div>
                         </div>
 
-                        <!-- HEALTH PROMOTION PROGRAMMES -->
+                        <!-- SLIDE 31: HEALTH PROMOTION PROGRAMMES -->
                         <div class="p-2.5 bg-amber-50/40 border border-amber-100 rounded-lg grid grid-cols-2 gap-2">
                             <p class="col-span-2 text-[9px] font-black text-amber-800 uppercase tracking-wider">Slide 31: Health Promotion Programmes</p>
                             <div><label class="font-medium block">Reproductive Health</label><input type="number" id="inp-hp-repro" class="w-full p-1 border rounded bg-white"></div>
@@ -174,7 +174,7 @@
                             <div><label class="font-medium block">Nutrition Prog.</label><input type="number" id="inp-hp-nutr" class="w-full p-1 border rounded bg-white"></div>
                         </div>
 
-                        <!-- DEFECTS AND MEDICAL CORRECTIONS TRACKING -->
+                        <!-- SLIDE 32, 33: DEFECTS AND MEDICAL CORRECTIONS TRACKING -->
                         <div class="p-2.5 bg-rose-50/40 border border-rose-100 rounded-lg grid grid-cols-2 gap-2">
                             <p class="col-span-2 text-[9px] font-black text-rose-800 uppercase tracking-wider">Slide 32, 33: Defects & Corrections Log</p>
                             <div><label class="font-medium block text-rose-600">Heart Defects Found</label><input type="number" id="inp-def-heart" class="w-full p-1 border rounded bg-white font-medium"></div>
@@ -227,24 +227,23 @@
                     </div>
                 </div>
 
-                <!-- BOARD 02: HISTORICAL VACCINATION TRACKER TABLE (🎯 RECONFIGURED FOR SCHOOL-WISE REVENUE AS REQUESTED) -->
+                <!-- BOARD 02: HISTORICAL VACCINATION TRACKER TABLE (FIXED ALIGNMENT) -->
                 <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
-                    <h4 id="lbl-timeline-title" class="text-xs font-black text-slate-700 uppercase tracking-tight">Division Cumulative Immunization Coverage Timeline (Monthly Tracker)</h4>
+                    <h4 class="text-xs font-black text-slate-700 uppercase tracking-tight">Division Cumulative Immunization Coverage Timeline (Monthly Tracker)</h4>
                     <div class="overflow-x-auto border rounded-lg shadow-inner max-h-56 custom-scrollbar">
-                        <table class="w-full text-[11px] text-center border-collapse min-w-[700px]">
+                        <table class="w-full text-[11px] text-center border-collapse min-w-[650px]">
                             <thead class="bg-slate-50 text-slate-600 font-bold border-b sticky top-0 z-10 shadow-sm">
                                 <tr>
-                                    <th class="p-2 border-r text-left pl-3">School Name</th>
+                                    <th class="p-2 border-r text-left pl-3">Month</th>
                                     <th class="p-2 border-r">Total Grade 7s</th>
-                                    <th class="p-2 border-r text-blue-600">aTd Given (Month Total)</th>
+                                    <th class="p-2 border-r text-blue-600">aTd Given (Yr Total)</th>
                                     <th class="p-2 border-r text-blue-700">aTd Coverage %</th>
                                     <th class="p-2 border-r">Total Grade 6Fs</th>
                                     <th class="p-2 border-r text-purple-600">HPV Dose 1 Given</th>
                                     <th class="p-2 text-purple-700">HPV D1 Coverage %</th>
                                 </tr>
                             </thead>
-                            <tbody id="tbody-vaccination-timeline" class="divide-y divide-slate-100 bg-white font-bold text-slate-700">
-                                <!-- Generated Dynamically by Cumulative Tracker Engine -->
+                            <tbody id="tbody-vaccination-timeline" class="divide-y divide-slate-100 bg-white font-semibold text-slate-700">
                             </tbody>
                         </table>
                     </div>
@@ -301,12 +300,14 @@
             document.getElementById('cloud-status-badge').innerText = "☁️ CLOUD ACTIVE";
             document.getElementById('cloud-status-badge').className = "text-xs font-mono bg-emerald-950 px-3 py-1.5 rounded-lg border border-emerald-700 text-emerald-400 font-bold";
         } catch (e) {
+            console.warn("Firebase execution halted. Falling back to secure localStorage mode.", e);
             isCloudActive = false;
             document.getElementById('cloud-status-badge').innerText = "🛡️ OFFLINE SAFE MODE";
             document.getElementById('cloud-status-badge').className = "text-xs font-mono bg-amber-950 px-3 py-1.5 rounded-lg border border-amber-700 text-amber-400 font-bold";
         }
 
         const MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        
         let registeredSchools = ["Amunupura Kanishta Vidyalaya", "Kirimetiya Tamil Vidyalaya", "Menikdiwela Central", "Poththapitiya Primary Collage"];
 
         const generateCleanSchoolObject = () => ({
@@ -314,11 +315,23 @@
         });
 
         let currentYearData = Array.from({length: 12}, () => ({}));
-        for(let m=0; m<12; m++) {
-            registeredSchools.forEach(school => {
-                currentYearData[m][school] = generateCleanSchoolObject();
-            });
-        }
+
+        registeredSchools.forEach(school => {
+            currentYearData[0][school] = generateCleanSchoolObject();
+            currentYearData[1][school] = generateCleanSchoolObject();
+            currentYearData[2][school] = generateCleanSchoolObject();
+            currentYearData[3][school] = generateCleanSchoolObject(); 
+
+            if(school === "Menikdiwela Central") {
+                currentYearData[3][school] = { smi_status: "Complete", atd_students: 60, atd_given: 55, atd_other: 5, hpv_students: 45, hpv_d1: 42, hpv_d2: 40, hp_repro: 1, hp_skills: 1, hp_ncd: 1, hp_nutr: 1, def_vis: 14, corr_vis: 10, def_hear: 2, corr_hear: 1, def_heart: 1, corr_heart: 1, def_dent: 35, corr_dent: 12 };
+            } else if (school === "Poththapitiya Primary Collage") {
+                currentYearData[3][school] = { smi_status: "Complete", atd_students: 0, atd_given: 0, atd_other: 0, hpv_students: 0, hpv_d1: 0, hpv_d2: 0, hp_repro: 0, hp_skills: 0, hp_ncd: 1, hp_nutr: 1, def_vis: 4, corr_vis: 2, def_hear: 0, corr_hear: 0, def_heart: 0, corr_heart: 0, def_dent: 18, corr_dent: 5 };
+            } else if (school === "Amunupura Kanishta Vidyalaya") {
+                currentYearData[3][school] = { smi_status: "Not Complete yet", atd_students: 32, atd_given: 28, atd_other: 0, hpv_students: 18, hpv_d1: 15, hpv_d2: 0, hp_repro: 1, hp_skills: 0, hp_ncd: 0, hp_nutr: 0, def_vis: 0, corr_vis: 0, def_hear: 0, corr_hear: 0, def_heart: 0, corr_heart: 0, def_dent: 0, corr_dent: 0 };
+            } else {
+                currentYearData[3][school] = generateCleanSchoolObject();
+            }
+        });
 
         let chartVaxInstance = null;
         let chartDefectInstance = null;
@@ -377,21 +390,9 @@
             if(registeredSchools.includes(currentSelection)) select.value = currentSelection;
         }
 
-        // 📍 FAIL-SAFE TERMINAL TIMEOUT ENFORCEMENT: කනෙක්ෂන් එක හිර වුණොත් සැනින් Offline Local ස්විච් එක දමයි
         function onFilterChange() {
             const year = document.getElementById('sel-year').value;
             const monthIdx = parseInt(document.getElementById('sel-month').value);
-
-            let hasLoaded = false;
-
-            const fallbackTimeout = setTimeout(() => {
-                if (!hasLoaded) {
-                    isCloudActive = false;
-                    document.getElementById('cloud-status-badge').innerText = "🛡️ OFFLINE SAFE MODE";
-                    document.getElementById('cloud-status-badge').className = "text-xs font-mono bg-amber-950 px-3 py-1.5 rounded-lg border border-amber-700 text-amber-400 font-bold";
-                    loadLocalCacheStorage(year);
-                }
-            }, 2000); // 2 Seconds Hard Limit Guard
 
             if (isCloudActive) {
                 cloudDb.ref('registered_schools_registry_v3').once('value').then((baseSnapshot) => {
@@ -402,25 +403,19 @@
 
                     return cloudDb.ref(`school_health_v3/${year}`).once('value');
                 }).then((snapshot) => {
-                    clearTimeout(fallbackTimeout);
-                    hasLoaded = true;
                     let data = snapshot.val();
                     if (data) {
                         currentYearData = data;
                     } else {
                         currentYearData = Array.from({length: 12}, () => ({}));
-                        for(let m=0; m<12; m++) {
-                            registeredSchools.forEach(s => { currentYearData[m][s] = generateCleanSchoolObject(); });
-                        }
+                        registeredSchools.forEach(s => { currentYearData[monthIdx][s] = generateCleanSchoolObject(); });
                     }
                     onActiveSchoolChange();
                 }).catch((err) => {
-                    clearTimeout(fallbackTimeout);
                     console.error(err);
                     loadLocalCacheStorage(year);
                 });
             } else {
-                clearTimeout(fallbackTimeout);
                 loadLocalCacheStorage(year);
             }
         }
@@ -434,11 +429,6 @@
             let localStore = JSON.parse(localStorage.getItem(`phi_school_local_${year}`));
             if (localStore) {
                 currentYearData = localStore;
-            } else {
-                currentYearData = Array.from({length: 12}, () => ({}));
-                for(let m=0; m<12; m++) {
-                    registeredSchools.forEach(s => { currentYearData[m][s] = generateCleanSchoolObject(); });
-                }
             }
             onActiveSchoolChange();
         }
@@ -457,17 +447,17 @@
 
             const schoolData = currentYearData[monthIdx][activeSchool];
 
-            document.getElementById('inp-smi-status').value = schoolData.smi_status || "Not Complete yet";
-            document.getElementById('inp-atd-students').value = schoolData.atd_students || 0;
-            document.getElementById('inp-atd-given').value = schoolData.atd_given || 0;
-            document.getElementById('inp-atd-other').value = schoolData.atd_other || 0;
-            document.getElementById('inp-hpv-students').value = schoolData.hpv_students || 0;
-            document.getElementById('inp-hpv-d1').value = schoolData.hpv_d1 || 0;
-            document.getElementById('inp-hpv-d2').value = schoolData.hpv_d2 || 0;
-            document.getElementById('inp-hp-repro').value = schoolData.hp_repro || 0;
-            document.getElementById('inp-hp-skills').value = schoolData.hp_skills || 0;
-            document.getElementById('inp-hp-ncd').value = schoolData.hp_ncd || 0;
-            document.getElementById('inp-hp-nutr').value = schoolData.hp_nutr || 0;
+            document.getElementById('inp-smi-status').value = schoolData.smi_status;
+            document.getElementById('inp-atd-students').value = schoolData.atd_students;
+            document.getElementById('inp-atd-given').value = schoolData.atd_given;
+            document.getElementById('inp-atd-other').value = schoolData.atd_other;
+            document.getElementById('inp-hpv-students').value = schoolData.hpv_students;
+            document.getElementById('inp-hpv-d1').value = schoolData.hpv_d1;
+            document.getElementById('inp-hpv-d2').value = schoolData.hpv_d2;
+            document.getElementById('inp-hp-repro').value = schoolData.hp_repro;
+            document.getElementById('inp-hp-skills').value = schoolData.hp_skills;
+            document.getElementById('inp-hp-ncd').value = schoolData.hp_ncd;
+            document.getElementById('inp-hp-nutr').value = schoolData.hp_nutr;
             
             document.getElementById('inp-def-heart').value = schoolData.def_heart || 0;
             document.getElementById('inp-corr-heart').value = schoolData.corr_heart || 0;
@@ -477,9 +467,6 @@
             document.getElementById('inp-corr-hear').value = schoolData.corr_hear || 0;
             document.getElementById('inp-def-dent').value = schoolData.def_dent || 0;
             document.getElementById('inp-corr-dent').value = schoolData.corr_dent || 0;
-
-            document.getElementById('lbl-context').innerText = `${MONTH_NAMES[monthIdx].toUpperCase()} ${year}`;
-            document.getElementById('lbl-timeline-title').innerText = `Division Immunization Progress Status: Up to ${MONTH_NAMES[monthIdx]} ${year}`;
 
             renderMasterSchoolsDataGridTable(year, monthIdx);
             renderVaccinationTimelineTable();
@@ -507,76 +494,54 @@
                     <td class="p-2.5 text-emerald-600 bg-amber-50/10">${rec.corr_hear || 0}</td>
                 </tr>`;
 
-                totalHeartDef += (parseInt(rec.def_heart) || 0); totalHeartCorr += (parseInt(rec.corr_heart) || 0);
-                totalVisDef += (parseInt(rec.def_vis) || 0); totalVisCorr += (parseInt(rec.corr_vis) || 0);
-                totalHearDef += (parseInt(rec.def_hear) || 0); totalHearCorr += (parseInt(rec.corr_hear) || 0);
+                totalHeartDef += (rec.def_heart || 0); totalHeartCorr += (rec.corr_heart || 0);
+                totalVisDef += (rec.def_vis || 0); totalVisCorr += (rec.corr_vis || 0);
+                totalHearDef += (rec.def_hear || 0); totalHearCorr += (rec.corr_hear || 0);
             });
 
             document.getElementById('tbody-smi-matrix').innerHTML = tbodyHtml;
             updateVisualGraphsCharts(totalHeartDef, totalHeartCorr, totalVisDef, totalVisCorr, totalHearDef, totalHearCorr, year, monthIdx);
         }
 
-        // 📍 DYNAMIC CUMULATIVE MONTHLY SCHOOL-WISE ENGINE: පාසලෙන් පාසලට වත්මන් මාසය දක්වා එකතුව (Cumulative Tracker) පෙන්වයි
         function renderVaccinationTimelineTable() {
-            const monthIdx = parseInt(document.getElementById('sel-month').value);
             let timelineHtml = '';
+            let cumulativeAtdGiven = 0, cumulativeAtdStudents = 0;
+            let cumulativeHpvD1Given = 0, cumulativeHpvStudents = 0;
 
-            let grandTotalAtdStudents = 0;
-            let grandTotalAtdGiven = 0;
-            let grandTotalHpvStudents = 0;
-            let grandTotalHpvD1 = 0;
+            MONTH_NAMES.forEach((monthLabel, mIdx) => {
+                let mTotalAtdStudents = 0, mTotalAtdGiven = 0;
+                let mTotalHpvStudents = 0, mTotalHpvD1 = 0;
 
-            registeredSchools.forEach(school => {
-                let schoolCumAtdStudents = 0;
-                let schoolCumAtdGiven = 0;
-                let schoolCumHpvStudents = 0;
-                let schoolCumHpvD1 = 0;
-
-                // ජනවාරි (0) සිට තෝරාගෙන ඇති වත්මන් මාසය (monthIdx) දක්වා දත්ත Cumulative එකතු කිරීම
-                for (let m = 0; m <= monthIdx; m++) {
-                    if (currentYearData && currentYearData[m] && currentYearData[m][school]) {
-                        let rec = currentYearData[m][school];
-                        schoolCumAtdStudents += parseInt(rec.atd_students) || 0;
-                        schoolCumAtdGiven += parseInt(rec.atd_given) || 0;
-                        schoolCumHpvStudents += parseInt(rec.hpv_students) || 0;
-                        schoolCumHpvD1 += parseInt(rec.hpv_d1) || 0;
-                    }
+                if (currentYearData[mIdx]) {
+                    registeredSchools.forEach(school => {
+                        if(currentYearData[mIdx][school]) {
+                            mTotalAtdStudents += currentYearData[mIdx][school].atd_students || 0;
+                            mTotalAtdGiven += currentYearData[mIdx][school].atd_given || 0;
+                            mTotalHpvStudents += currentYearData[mIdx][school].hpv_students || 0;
+                            mTotalHpvD1 += currentYearData[mIdx][school].hpv_d1 || 0;
+                        }
+                    });
                 }
 
-                let atdPct = schoolCumAtdStudents > 0 ? Math.round((schoolCumAtdGiven / schoolCumAtdStudents) * 100) : 0;
-                let hpvPct = schoolCumHpvStudents > 0 ? Math.round((schoolCumHpvD1 / schoolCumHpvStudents) * 100) : 0;
+                cumulativeAtdGiven += mTotalAtdGiven;
+                cumulativeAtdStudents += mTotalAtdStudents;
+                cumulativeHpvD1Given += mTotalHpvD1;
+                cumulativeHpvStudents += mTotalHpvStudents;
+
+                let atdPct = mTotalAtdStudents > 0 ? Math.round((mTotalAtdGiven / mTotalAtdStudents) * 100) : 0;
+                let hpvPct = mTotalHpvStudents > 0 ? Math.round((mTotalHpvD1 / mTotalHpvStudents) * 100) : 0;
 
                 timelineHtml += `
                 <tr class="bg-white font-semibold text-center hover:bg-slate-50/40 text-xs text-slate-800">
-                    <td class="p-2 text-left pl-3 font-bold border-r text-slate-900 bg-slate-50/50">${school}</td>
-                    <td class="p-2 border-r text-slate-500 font-medium">${schoolCumAtdStudents}</td>
-                    <td class="p-2 border-r text-blue-600 font-bold">${schoolCumAtdGiven}</td>
+                    <td class="p-2 text-left pl-3 font-bold border-r text-slate-900 bg-slate-50/50">${monthLabel}</td>
+                    <td class="p-2 border-r text-slate-400 font-medium">${mTotalAtdStudents}</td>
+                    <td class="p-2 border-r text-blue-600 font-bold">${mTotalAtdGiven} <span class="text-[9px] text-slate-400 font-normal">(Cum: ${cumulativeAtdGiven})</span></td>
                     <td class="p-2 border-r text-blue-700 text-sm font-black bg-blue-50/20">${atdPct}%</td>
-                    <td class="p-2 border-r text-slate-500 font-medium">${schoolCumHpvStudents}</td>
-                    <td class="p-2 border-r text-purple-600 font-bold">${schoolCumHpvD1}</td>
+                    <td class="p-2 border-r text-slate-400 font-medium">${mTotalHpvStudents}</td>
+                    <td class="p-2 border-r text-purple-600 font-bold">${mTotalHpvD1} <span class="text-[9px] text-slate-400 font-normal">(Cum: ${cumulativeHpvD1Given})</span></td>
                     <td class="p-2 text-purple-700 text-sm font-black bg-purple-50/20">${hpvPct}%</td>
                 </tr>`;
-
-                grandTotalAtdStudents += schoolCumAtdStudents;
-                grandTotalAtdGiven += schoolCumAtdGiven;
-                grandTotalHpvStudents += schoolCumHpvStudents;
-                grandTotalHpvD1 += schoolCumHpvD1;
             });
-
-            // බෝඩ් එකේ පල්ලෙහායින්ම එකතු වන සමස්ත කොට්ඨාසයේම එකතුව (Total Summary Row)
-            let grandAtdPct = grandTotalAtdStudents > 0 ? Math.round((grandTotalAtdGiven / grandTotalAtdStudents) * 100) : 0;
-            let grandHpvPct = grandTotalHpvStudents > 0 ? Math.round((grandTotalHpvD1 / grandTotalHpvStudents) * 100) : 0;
-
-            timelineHtml += `
-            <tr class="bg-slate-100 font-black text-center text-xs text-slate-900 border-t-2 border-slate-300">
-                <td class="p-2 text-left pl-3 font-black text-indigo-950 uppercase bg-slate-200/60">Total</td>
-                <td class="p-2 border-r">${grandTotalAtdStudents}</td>
-                <td class="p-2 border-r text-blue-700">${grandTotalAtdGiven}</td>
-                <td class="p-2 border-r text-blue-900 bg-blue-100/50 text-sm font-black">${grandAtdPct}%</td>
-                <td class="p-2 border-r">${grandTotalHpvStudents}</td>
-                <td class="p-2 border-r text-purple-700">${grandTotalHpvD1}</td>
-                <td class="p-2 text-purple-900 bg-purple-100/50 text-sm font-black">${grandHpvPct}%</td>
-            </tr>`;
 
             document.getElementById('tbody-vaccination-timeline').innerHTML = timelineHtml;
         }
@@ -586,18 +551,13 @@
             if(chartVaxInstance) chartVaxInstance.destroy();
 
             let totAtdStud = 0, totAtdGiv = 0, totHpvStud = 0, totHpvD1Giv = 0;
-            for(let m=0; m<12; m++) {
-                if (currentYearData && currentYearData[m]) {
-                    registeredSchools.forEach(s => {
-                        let rec = currentYearData[m][s];
-                        if (rec) {
-                            totAtdStud += parseInt(rec.atd_students) || 0;
-                            totAtdGiv += parseInt(rec.atd_given) || 0;
-                            totHpvStud += parseInt(rec.hpv_students) || 0;
-                            totHpvD1Giv += parseInt(rec.hpv_d1) || 0;
-                        }
-                    });
-                }
+            if (currentYearData[monthIdx]) {
+                registeredSchools.forEach(s => {
+                    if(currentYearData[monthIdx][s]) {
+                        totAtdStud += currentYearData[monthIdx][s].atd_students || 0; totAtdGiv += currentYearData[monthIdx][s].atd_given || 0;
+                        totHpvStud += currentYearData[monthIdx][s].hpv_students || 0; totHpvD1Giv += currentYearData[monthIdx][s].hpv_d1 || 0;
+                    }
+                });
             }
 
             let netAtdRate = totAtdStud > 0 ? Math.round((totAtdGiv / totAtdStud) * 100) : 0;
@@ -606,7 +566,7 @@
             chartVaxInstance = new Chart(ctx1, {
                 type: 'doughnut',
                 data: {
-                    labels: ['aTd Cumulative Rate (%)', 'HPV Cumulative Rate (%)'],
+                    labels: ['aTd Grade 7 Coverage (%)', 'HPV Grade 6 F-Coverage (%)'],
                     datasets: [{ data: [netAtdRate, netHpvRate], backgroundColor: ['#2563eb', '#7c3aed'], borderWidth: 1 }]
                 },
                 options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 9 } } } } }
@@ -618,37 +578,35 @@
             chartDefectInstance = new Chart(ctx2, {
                 type: 'bar',
                 data: {
-                    labels: ['Heart Defects', 'Visual Defects', 'Hearing Defects'],
+                    labels: ['Heart Problems', 'Visual Defects', 'Hearing Defects'],
                     datasets: [
                         { label: 'Defects Discovered', data: [htDef, vDef, hDef], backgroundColor: '#f43f5e', borderRadius: 4 },
-                        { label: 'Corrected', data: [htCorr, vCorr, hCorr], backgroundColor: '#10b981', borderRadius: 4 }
+                        { label: 'Successfully Corrected', data: [htCorr, vCorr, hCorr], backgroundColor: '#10b981', borderRadius: 4 }
                     ]
                 },
-                options: { responsive: true, maintainAspectRatio: false, scales: { y: { min: 0, beginAtZero: true } }, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 9 } } } } });
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { min: 0, beginAtZero: true } }, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 9 } } } } }
+            });
 
             const ctx3 = document.getElementById('chartAnnualHealthProg').getContext('2d');
             if(chartAnnualHPInstance) chartAnnualHPInstance.destroy();
 
             let annRepro = 0, annSkills = 0, annNcd = 0, annNutr = 0;
             currentYearData.forEach(mRecord => {
-                if(mRecord) {
-                    registeredSchools.forEach(school => {
-                        let rec = mRecord[school];
-                        if (rec) {
-                            annRepro += (parseInt(rec.hp_repro) || 0);
-                            annSkills += (parseInt(rec.hp_skills) || 0);
-                            annNcd += (parseInt(rec.hp_ncd) || 0);
-                            annNutr += (parseInt(rec.hp_nutr) || 0);
-                        }
-                    });
-                }
+                registeredSchools.forEach(school => {
+                    if(mRecord && mRecord[school]) {
+                        annRepro += (mRecord[school].hp_repro || 0);
+                        annSkills += (mRecord[school].hp_skills || 0);
+                        annNcd += (mRecord[school].hp_ncd || 0);
+                        annNutr += (mRecord[school].hp_nutr || 0);
+                    }
+                });
             });
 
             chartAnnualHPInstance = new Chart(ctx3, {
                 type: 'bar',
                 data: {
-                    labels: ['Reproductive', 'Life Skills', 'NCDs', 'Nutrition'],
-                    datasets: [{ data: [annRepro, annSkills, annNcd, annNutr], backgroundColor: ['#f59e0b', '#06b6d4', '#ec4899', '#10b981'], borderRadius: 5, barThickness: 30 }]
+                    labels: ['Reproductive Health', 'Life Skills', 'Diseases & NCDs', 'Nutrition Programs'],
+                    datasets: [{ data: [annRepro, annSkills, annNcd, annNutr], backgroundColor: ['#f59e0b', '#06b6d4', '#ec4899', '#10b981'], borderRadius: 5, barThickness: 45 }]
                 },
                 options: { responsive: true, maintainAspectRatio: false, scales: { y: { min: 0, beginAtZero: true } }, plugins: { legend: { display: false } } }
             });
@@ -685,8 +643,6 @@
                 return;
             }
 
-            if(!currentYearData[monthIdx]) currentYearData[monthIdx] = {};
-
             currentYearData[monthIdx][activeSchool] = {
                 smi_status: document.getElementById('inp-smi-status').value,
                 atd_students: atdStud, atd_given: atdGiv,
@@ -708,11 +664,11 @@
 
             if(isCloudActive) {
                 cloudDb.ref(`school_health_v3/${year}`).set(currentYearData).then(() => {
-                    alert(`🚀 Cloud Sync Complete! Displays Synchronized Successfully.`);
+                    alert(`🚀 Cloud Sync Complete!`);
                     onActiveSchoolChange();
                 }).catch((err) => {
                     console.error(err);
-                    alert(`🛡️ Offline Mode Safe: Local storage updated successfully.`);
+                    alert(`🛡️ Offline Mode Safe: Local node data compiled successfully.`);
                     onActiveSchoolChange();
                 });
             } else {
@@ -721,6 +677,7 @@
             }
         }
 
+        // 📍 UPGRADED: Dynamic Previous Month Selector Engine Sync
         window.onload = function() {
             renderRegistryBadges();
             populateSchoolSelectOptions();
