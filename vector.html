@@ -174,7 +174,7 @@
                 </button>
             </div>
 
-            <!-- RIGHT COLUMN: INDEPENDENT TABLES, REALTIME CHARTS & MAPS -->
+            <!-- RIGHT COLUMN: MASTER VIEWS -->
             <div class="xl:col-span-2 space-y-6 overflow-y-auto custom-scrollbar pr-1 pb-12">
                 
                 <!-- TABLE 01: DENGUE ACTIVITY MASTER GRID -->
@@ -287,13 +287,13 @@
                     </div>
                 </div>
 
-                <!-- FULL YEAR CUMULATIVE PROGRESS LINE GRAPH -->
+                <!-- FULL YEAR Progress LINE GRAPH -->
                 <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col">
                     <h5 class="text-[11px] font-black text-slate-400 uppercase tracking-wider mb-3">Annual Zoonotic Prophylaxis Progression Trends (Full Year View)</h5>
                     <div class="h-56"><canvas id="chartAnnualVectorTrend"></canvas></div>
                 </div>
 
-                <!-- NEW MAP LAYER: DENGUE CASE LOCATIONS (ADDED BEFORE RABIES MAP) -->
+                <!-- DENGUE CASE MAP LAYER -->
                 <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
                     <div class="flex justify-between items-center border-b pb-2">
                         <div>
@@ -311,7 +311,7 @@
                     </div>
                 </div>
 
-                <!-- PERSISTENT MAP LAYER: RABIES MAP -->
+                <!-- RABIES MAP LAYER -->
                 <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
                     <div class="flex justify-between items-center border-b pb-2">
                         <div>
@@ -330,11 +330,10 @@
                 </div>
 
             </div>
-
         </main>
     </div>
 
-    <!-- ☁ ================== SCRIPTS CORE ================== -->
+    <!-- ☁ Firebase CDNS -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
@@ -353,15 +352,16 @@
         let cloudDb = null;
 
         try {
-            if (!firebase.apps.length) {
-                firebase.initializeApp(firebaseConfig);
+            if (typeof firebase !== 'undefined' && firebase.apps) {
+                if (!firebase.apps.length) {
+                    firebase.initializeApp(firebaseConfig);
+                }
+                cloudDb = firebase.database();
+                isCloudActive = true;
+                document.getElementById('cloud-status-badge').innerText = "☁️ CLOUD ACTIVE";
+                document.getElementById('cloud-status-badge').className = "text-xs font-mono bg-emerald-950 px-3 py-1.5 rounded-lg border border-emerald-700 text-emerald-400 font-bold";
             }
-            cloudDb = firebase.database();
-            isCloudActive = true;
-            document.getElementById('cloud-status-badge').innerText = "☁️ CLOUD ACTIVE";
-            document.getElementById('cloud-status-badge').className = "text-xs font-mono bg-emerald-950 px-3 py-1.5 rounded-lg border border-emerald-700 text-emerald-400 font-bold";
         } catch (e) {
-            console.warn("Cloud instance drops. Falling back to local secure storage array engines.", e);
             isCloudActive = false;
             document.getElementById('cloud-status-badge').innerText = "🛡️ OFFLINE SAFE MODE";
             document.getElementById('cloud-status-badge').className = "text-xs font-mono bg-amber-950 px-3 py-1.5 rounded-lg border border-amber-700 text-amber-400 font-bold";
@@ -372,19 +372,12 @@
         const localBaselineData = Array.from({length: 12}, (_, idx) => {
             return {
                 d_visit: idx===0 ? 134 : (idx===1 ? 128 : (idx===2 ? 108 : (idx===3 ? 98 : 0))), 
-                d_shram: 0,
-                d_notice: idx===0 ? 3 : 1, 
-                d_pros: 0,
+                d_shram: 0, d_notice: idx===0 ? 3 : 1, d_pros: 0,
                 d_insp: idx===0 ? 385 : (idx===1 ? 368 : (idx===2 ? 419 : (idx===3 ? 354 : 0))), 
                 d_wet: idx===0 ? 72 : (idx===1 ? 42 : (idx===2 ? 42 : (idx===3 ? 54 : 0))), 
-                l_doxy: idx===2 ? 100 : (idx===3 ? 50 : 0), 
-                l_he: idx===3 ? 1 : 0, 
-                l_kanna: idx===3 ? 2 : 0, 
-                r_pop: 10673, 
-                r_cent: idx===1 ? 5 : (idx===3 ? 3 : 0), 
-                r_days: idx===1 ? 1 : (idx===3 ? 2 : 0), 
-                r_dog: idx===1 ? 809 : (idx===3 ? 340 : 0), 
-                r_stray: idx===1 ? 84 : (idx===3 ? 52 : 0) 
+                l_doxy: idx===2 ? 100 : (idx===3 ? 50 : 0), l_he: idx===3 ? 1 : 0, l_kanna: idx===3 ? 2 : 0, 
+                r_pop: 10673, r_cent: idx===1 ? 5 : (idx===3 ? 3 : 0), r_days: idx===1 ? 1 : (idx===3 ? 2 : 0), 
+                r_dog: idx===1 ? 809 : (idx===3 ? 340 : 0), r_stray: idx===1 ? 84 : (idx===3 ? 52 : 0) 
             };
         });
 
@@ -397,20 +390,12 @@
             const year = document.getElementById('sel-year').value;
             const monthIdx = parseInt(document.getElementById('sel-month').value);
 
-            document.getElementById('td-ctx-den').innerText = "LOAD...";
-            document.getElementById('td-ctx-lep').innerText = "LOAD...";
-
-            if (isCloudActive) {
+            if (isCloudActive && cloudDb) {
                 cloudDb.ref(`vector_v2/${year}`).once('value').then((snapshot) => {
                     let data = snapshot.val();
-                    if (data) {
-                        currentYearData = data;
-                    } else {
-                        currentYearData = [...localBaselineData];
-                    }
+                    if (data) { currentYearData = data; }
                     renderDataUI(monthIdx, year);
                 }).catch((err) => {
-                    console.error(err);
                     loadLocalCacheStorage(year);
                     renderDataUI(monthIdx, year);
                 });
@@ -422,11 +407,7 @@
 
         function loadLocalCacheStorage(year) {
             let localStore = JSON.parse(localStorage.getItem(`phi_vector_local_${year}`));
-            if (localStore) {
-                currentYearData = localStore;
-            } else {
-                currentYearData = [...localBaselineData];
-            }
+            if (localStore) { currentYearData = localStore; } else { currentYearData = [...localBaselineData]; }
         }
 
         function renderDataUI(monthIdx, year) {
@@ -450,8 +431,8 @@
             document.getElementById('inp-rab-stray').value = record.r_stray;
 
             const targetDogs = Math.round(record.r_pop / 8);
-
             const contextString = `${MONTH_NAMES[monthIdx].substring(0,3).toUpperCase()} ${year}`;
+            
             document.getElementById('td-ctx-den').innerText = contextString;
             document.getElementById('td-den-visit').innerText = record.d_visit;
             document.getElementById('td-den-shram').innerText = record.d_shram;
@@ -489,45 +470,25 @@
             const d_notice = parseInt(document.getElementById('inp-den-notice').value) || 0;
             const d_pros = parseInt(document.getElementById('inp-den-pros').value) || 0;
 
-            if (d_visit > d_insp) {
-                alert("⚠️ Validation Error: Home visits conducted cannot exceed total vector premises inspected.");
-                return;
-            }
-            if (d_notice + d_pros > d_insp) {
-                alert("⚠️ Validation Error: Combined statutory enforcements cannot exceed total premises inspected.");
-                return;
-            }
+            if (d_visit > d_insp) { alert("⚠️ Validation Error: Home visits cannot exceed inspected premises."); return; }
 
             currentYearData[monthIdx] = {
-                d_visit: d_visit,
-                d_shram: parseInt(document.getElementById('inp-den-shram').value) || 0,
-                d_notice: d_notice,
-                d_pros: d_pros,
-                d_insp: d_insp,
-                d_wet: d_wet,
-                l_doxy: parseInt(document.getElementById('inp-lep-doxy').value) || 0,
-                l_he: parseInt(document.getElementById('inp-lep-he').value) || 0,
-                l_kanna: parseInt(document.getElementById('inp-lep-kanna').value) || 0,
-                r_pop: parseInt(document.getElementById('inp-rab-pop').value) || 0,
-                r_cent: parseInt(document.getElementById('inp-rab-cent').value) || 0,
-                r_days: parseInt(document.getElementById('inp-rab-days').value) || 0,
-                r_dog: parseInt(document.getElementById('inp-rab-dog').value) || 0,
-                r_stray: parseInt(document.getElementById('inp-rab-stray').value) || 0
+                d_visit: d_visit, d_shram: parseInt(document.getElementById('inp-den-shram').value) || 0, d_notice: d_notice, d_pros: d_pros, d_insp: d_insp, d_wet: d_wet,
+                l_doxy: parseInt(document.getElementById('inp-lep-doxy').value) || 0, l_he: parseInt(document.getElementById('inp-lep-he').value) || 0, l_kanna: parseInt(document.getElementById('inp-lep-kanna').value) || 0,
+                r_pop: parseInt(document.getElementById('inp-rab-pop').value) || 0, r_cent: parseInt(document.getElementById('inp-rab-cent').value) || 0, r_days: parseInt(document.getElementById('inp-rab-days').value) || 0, r_dog: parseInt(document.getElementById('inp-rab-dog').value) || 0, r_stray: parseInt(document.getElementById('inp-rab-stray').value) || 0
             };
 
             localStorage.setItem(`phi_vector_local_${year}`, JSON.stringify(currentYearData));
 
-            if (isCloudActive) {
+            if (isCloudActive && cloudDb) {
                 cloudDb.ref(`vector_v2/${year}`).set(currentYearData).then(() => {
-                    alert(`🚀 Cloud Sync Complete: Vector and Zoonotic datasets committed live to online matrix!`);
+                    alert(`🚀 Cloud Sync Complete!`);
                     onFilterChange();
                 }).catch((err) => {
-                    console.error(err);
-                    alert(`🛡️ Offline Mode Safe: Local node data compiled successfully.`);
                     onFilterChange();
                 });
             } else {
-                alert(`🛡️ Offline Mode Safe: Dynamic vector variables saved.`);
+                alert(`🛡️ Offline Mode Safe: Saved locally.`);
                 onFilterChange();
             }
         }
@@ -561,27 +522,33 @@
             const ctx3 = document.getElementById('chartAnnualVectorTrend').getContext('2d');
             if(chartAnnualInstance) chartAnnualInstance.destroy();
 
-            let dengueTimeline = currentYearData.map(m => m.d_visit);
-            let doxyTimeline = currentYearData.map(m => m.l_doxy);
-            let rabiesTimeline = currentYearData.map(m => m.r_dog + m.r_stray);
-
             chartAnnualInstance = new Chart(ctx3, {
                 type: 'line',
                 data: {
                     labels: MONTH_NAMES.map(m => m.substring(0,3)),
                     datasets: [
-                        { label: 'Dengue Visits', data: dengueTimeline, borderColor: '#06b6d4', tension: 0.15, fill: false },
-                        { label: 'Doxycycline Distributed', data: doxyTimeline, borderColor: '#f59e0b', tension: 0.15, fill: false },
-                        { label: 'Rabies Vaccinations', data: rabiesTimeline, borderColor: '#10b981', tension: 0.15, fill: false }
+                        { label: 'Dengue Visits', data: currentYearData.map(m => m.d_visit), borderColor: '#06b6d4', tension: 0.15, fill: false },
+                        { label: 'Doxycycline Distributed', data: currentYearData.map(m => m.l_doxy), borderColor: '#f59e0b', tension: 0.15, fill: false },
+                        { label: 'Rabies Vaccinations', data: currentYearData.map(m => m.r_dog + m.r_stray), borderColor: '#10b981', tension: 0.15, fill: false }
                     ]
                 },
                 options: { responsive: true, maintainAspectRatio: false, scales: { y: { min: 0, beginAtZero: true } }, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12 } } } }
             });
         }
 
+        // 🎯 APPROVED AUTO-SELECT ENTRY MATRIX
         window.onload = function() {
-            document.getElementById('sel-year').value = "2026";
-            document.getElementById('sel-month').value = "3"; // Focus April initial frameworks context
+            const currentSystemDate = new Date();
+            let previousMonthIdx = currentSystemDate.getMonth() - 1;
+            let targetYear = currentSystemDate.getFullYear();
+
+            if (previousMonthIdx < 0) {
+                previousMonthIdx = 11;
+                targetYear = targetYear - 1;
+            }
+
+            document.getElementById('sel-year').value = targetYear.toString();
+            document.getElementById('sel-month').value = previousMonthIdx.toString();
             onFilterChange();
         };
     </script>
