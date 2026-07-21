@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PHI Command Center - 08. Health Education Program</title>
+    <!-- Tailwind CSS & Chart.js -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -15,6 +16,7 @@
 </head>
 <body class="bg-slate-50 font-sans text-slate-800 flex flex-col h-screen overflow-hidden">
 
+    <!-- TOP GLOBAL BAR -->
     <header class="bg-slate-900 text-white shadow-xl px-6 py-4 flex justify-between items-center z-40 flex-shrink-0">
         <div class="flex items-center space-x-3">
             <a href="dashboard.html" class="bg-indigo-600 p-2.5 rounded-xl text-white shadow-md hover:bg-indigo-500 transition">
@@ -30,8 +32,10 @@
         </div>
     </header>
 
+    <!-- MAIN LAYOUT -->
     <div class="flex flex-1 overflow-hidden">
         
+        <!-- SIDEBAR NAVIGATION -->
         <aside class="w-72 bg-slate-950 text-slate-300 flex-shrink-0 border-r border-slate-800 flex flex-col justify-between">
             <div class="overflow-y-auto custom-scrollbar p-3 space-y-1">
                 <p class="text-[10px] uppercase tracking-widest text-slate-500 font-black px-3 py-2">System Modules</p>
@@ -62,14 +66,20 @@
                 <a href="education.html" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-bold bg-indigo-600 text-white transition shadow-md">
                     <i class="fa-solid fa-chalkboard-user w-4 text-center"></i> <span>08. Health Education Program</span>
                 </a>
+                <!-- 🎯 UPDATED MODULE ORDER HERE -->
+                <a href="trade_inspection.html" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-semibold hover:bg-slate-900 hover:text-white transition text-slate-400">
+                    <i class="fa-solid fa-briefcase w-4 text-center"></i> <span>09. TRC & BRC Approval</span>
+                </a>
                 <a href="special.html" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-semibold hover:bg-slate-900 hover:text-white transition text-slate-400">
-                    <i class="fa-solid fa-star w-4 text-center"></i> <span>09. Special Program Log</span>
+                    <i class="fa-solid fa-star w-4 text-center"></i> <span>10. Special Program Log</span>
                 </a>
             </div>
         </aside>
 
+        <!-- CONTENT PANEL SPLIT -->
         <main class="flex-1 p-6 overflow-y-auto custom-scrollbar grid grid-cols-1 xl:grid-cols-3 gap-6">
             
+            <!-- LEFT WORKSPACE COLUMN -->
             <div class="xl:col-span-1 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4 h-fit">
                 <div class="border-b pb-2">
                     <h3 class="font-black text-slate-900 text-sm flex items-center space-x-2">
@@ -118,6 +128,7 @@
                 </button>
             </div>
 
+            <!-- RIGHT WORKSPACE COLUMN -->
             <div class="xl:col-span-2 space-y-6 overflow-y-auto custom-scrollbar pr-1">
                 
                 <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
@@ -165,6 +176,7 @@
         </main>
     </div>
 
+    <!-- ☁️ GOOGLE FIREBASE CDNS -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
@@ -395,7 +407,6 @@
             }
         }
 
-        // 📍 UPGRADED: Dynamic Previous Month Selector Engine Sync
         window.onload = function() {
             buildPortalFieldsLayout();
 

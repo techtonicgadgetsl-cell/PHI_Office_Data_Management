@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PHI Command Center - 03. Food Safety & Hygiene</title>
+    <!-- Tailwind CSS & Chart.js -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -57,13 +58,17 @@
                     <i class="fa-solid fa-mosquito w-4 text-center"></i> <span>06. Vector Control</span>
                 </a>
                 <a href="school_health.html" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-semibold hover:bg-slate-900 hover:text-white transition text-slate-400">
-                    <i class="fa-solid fa-graduation-cap w-4 text-center"></i> <span>07. Visit Medical Inspection</span>
+                    <i class="fa-solid fa-graduation-cap w-4 text-center"></i> <span>07. School Health & SMI</span>
                 </a>
                 <a href="education.html" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-semibold hover:bg-slate-900 hover:text-white transition text-slate-400">
                     <i class="fa-solid fa-chalkboard-user w-4 text-center"></i> <span>08. Health Education Program</span>
                 </a>
+                <!-- 🎯 UPDATED MODULE ORDER -->
+                <a href="trade_inspection.html" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-semibold hover:bg-slate-900 hover:text-white transition text-slate-400">
+                    <i class="fa-solid fa-briefcase w-4 text-center"></i> <span>09. TRC & BRC Approval</span>
+                </a>
                 <a href="special.html" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-semibold hover:bg-slate-900 hover:text-white transition text-slate-400">
-                    <i class="fa-solid fa-star w-4 text-center"></i> <span>09. Special Program Log</span>
+                    <i class="fa-solid fa-star w-4 text-center"></i> <span>10. Special Program Log</span>
                 </a>
             </div>
         </aside>
@@ -335,7 +340,7 @@
             document.getElementById('portal-categories-container').innerHTML = html;
         }
 
-        function toggleRowTotal(rowIdx) {
+        function calcRowTotal(rowIdx) {
             let a = parseInt(document.getElementById(`inp-mat-${rowIdx}-1`).value) || 0;
             let b = parseInt(document.getElementById(`inp-mat-${rowIdx}-2`).value) || 0;
             let c = parseInt(document.getElementById(`inp-mat-${rowIdx}-3`).value) || 0;
@@ -544,7 +549,6 @@
             }
         }
 
-        // 📍 UPGRADED: Dynamic Previous Month Selector Engine Sync
         window.onload = function() {
             buildPortalSkeleton();
 
