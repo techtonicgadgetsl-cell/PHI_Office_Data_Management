@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PHI Command Center - 09. Special Program Log</title>
+    <title>PHI Command Center - 10. Special Program Log</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -22,7 +22,7 @@
                 <i class="fa-solid fa-star text-xl"></i>
             </a>
             <div>
-                <h1 class="text-lg font-black tracking-wide text-slate-100 uppercase">09. Special Field Programmes & Activity Log</h1>
+                <h1 class="text-lg font-black tracking-wide text-slate-100 uppercase">10. Special Field Programmes & Activity Log</h1>
                 <p class="text-xs text-slate-400">Custom Field Dairy, Miscellaneous Raid Summaries & Photo Evidence Logging</p>
             </div>
         </div>
@@ -65,8 +65,12 @@
                 <a href="education.html" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-semibold hover:bg-slate-900 hover:text-white transition text-slate-400">
                     <i class="fa-solid fa-chalkboard-user w-4 text-center"></i> <span>08. Health Education Program</span>
                 </a>
-                <a href="special.html" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-bold bg-indigo-600 text-white transition shadow-md">
-                    <i class="fa-solid fa-star w-4 text-center"></i> <span>09. Special Program Log</span>
+                <a href="trade_inspection.html" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-semibold hover:bg-slate-900 hover:text-white transition text-slate-400">
+                    <i class="fa-solid fa-briefcase w-4 text-center"></i> <span>09. TRC & BRC Approval</span>
+                </a>
+                <!-- 🎯 ACTIVE MODULE 10 -->
+                <a href="special.html" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-bold bg-purple-600 text-white transition shadow-md">
+                    <i class="fa-solid fa-star w-4 text-center"></i> <span>10. Special Program Log</span>
                 </a>
             </div>
         </aside>
@@ -204,7 +208,6 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
-        // ☁️ FIREBASE MASTER SECURITY SHIELD CONFIG
         const firebaseConfig = {
             apiKey: "AIzaSyDbaDrXNoam9yEXXt-Q4oM_NieWsVH0AiM",
             authDomain: "phi-command-center.firebaseapp.com",
@@ -218,7 +221,6 @@
         let isCloudActive = false;
         let cloudDb = null;
 
-        // SAFE RUNTIME STABILIZER LAYER
         try {
             if (!firebase.apps.length) {
                 firebase.initializeApp(firebaseConfig);
@@ -236,7 +238,6 @@
 
         const MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
         
-        // Dynamic baseline structural presentation defaults mapping 
         const localBaselineData = Array.from({length: 12}, (_, idx) => {
             return idx === 3 ? {
                 activities: ["Conducted Special Integrated Dengue Source Elimination Campaign around Poththapitiya GN market circle area with community participation."],
@@ -288,7 +289,6 @@
 
             document.getElementById('lbl-context').innerText = `${MONTH_NAMES[monthIdx].toUpperCase()} ${year} SPECIAL FIELD DAIRY`;
 
-            // Render Large font Bullet Points List
             let bulletHtml = '';
             if(monthRecord.activities.length === 0) {
                 bulletHtml = `
@@ -310,7 +310,6 @@
             }
             document.getElementById('bullet-list-display-container').innerHTML = bulletHtml;
 
-            // Render Evidence Image previews matrix slots 1 to 4
             for(let i=0; i<4; i++) {
                 let imgElement = document.getElementById(`prev-img-${i}`);
                 let iconElement = document.getElementById(`prev-icon-${i}`);
@@ -365,7 +364,6 @@
             
             currentYearData[monthIdx].images = [...currentUploadedImages];
 
-            // PERSIST DATA PIPELINES
             localStorage.setItem(`phi_special_diary_local_${year}`, JSON.stringify(currentYearData));
 
             if (isCloudActive) {
@@ -420,7 +418,6 @@
             }
         }
 
-        // 📍 UPGRADED: Dynamic Previous Month Selector Engine Sync
         window.onload = function() {
             const currentSystemDate = new Date();
             let previousMonthIdx = currentSystemDate.getMonth() - 1;
