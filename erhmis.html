@@ -19,6 +19,14 @@ body.portal-hidden [data-view]{grid-column:1/-1 !important}
 #portal-toggle-btn{display:inline-flex;align-items:center;gap:.4rem;font-size:.75rem;font-weight:700;padding:.375rem .75rem;border-radius:.5rem;border:1px solid #475569;background:#1e293b;color:#e2e8f0;cursor:pointer;white-space:nowrap}
 #portal-toggle-btn:hover{background:#334155}
 </style>
+<style id="present-mode-css">
+body.presenting header,body.presenting aside,body.presenting [data-portal]{display:none !important}
+body.presenting [data-view]{grid-column:1/-1 !important;padding:1.5rem 2.5rem 5rem}
+body.presenting [data-view] > *{display:none !important}
+body.presenting [data-view] > .slide-active{display:block !important;zoom:1.2}
+body.presenting [data-view] > .slide-active.grid{display:grid !important}
+body.presenting [data-view] button:has(.fa-trash),body.presenting [data-view] button:has(.fa-trash-can),body.presenting [data-view] button:has(.fa-pen-to-square),body.presenting [data-view] [onclick*="delete" i],body.presenting [data-view] [onclick*="remove" i],body.presenting [data-view] [onclick*="clear" i]{display:none !important}
+</style>
 </head>
 <body class="bg-slate-50 font-sans text-slate-800 flex flex-col h-screen overflow-hidden portal-hidden">
 
@@ -429,6 +437,38 @@ body.portal-hidden [data-view]{grid-column:1/-1 !important}
     setTimeout(function(){window.dispatchEvent(new Event('resize'))},50);
   };
   sync();
+})();
+</script>
+<script id="present-mode-js">
+/* Presentation mode: runs only when opened inside the dashboard deck (?present=1). */
+(function(){
+  if(!/[?&]present=1/.test(location.search)||window.parent===window)return;
+  var slides=[],idx=0;
+  function post(o){o.src='phi-slide';window.parent.postMessage(o,'*')}
+  function show(){
+    slides.forEach(function(s,i){s.classList.toggle('slide-active',i===idx)});
+    var v=document.querySelector('[data-view]');if(v)v.scrollTop=0;
+    post({type:'state',idx:idx,count:slides.length});
+    [60,300].forEach(function(t){setTimeout(function(){window.dispatchEvent(new Event('resize'))},t)});
+  }
+  function init(){
+    var v=document.querySelector('[data-view]');if(!v)return;
+    slides=[].slice.call(v.children).filter(function(e){return getComputedStyle(e).display!=='none'});
+    document.body.classList.add('presenting');
+    idx=/[?&]start=last/.test(location.search)?Math.max(slides.length-1,0):0;
+    var h=document.querySelector('header h1'),p=h&&h.parentNode.querySelector('p');
+    post({type:'ready',title:h?h.textContent.trim():'',sub:p?p.textContent.trim():''});
+    show();
+  }
+  window.addEventListener('message',function(e){
+    var d=e.data;if(!d||d.src!=='phi-deck')return;
+    if(d.type==='goto'){idx=Math.min(Math.max(d.idx,0),slides.length-1);show()}
+  });
+  document.addEventListener('keydown',function(e){
+    var t=(e.target.tagName||'').toLowerCase();if(t==='input'||t==='select'||t==='textarea')return;
+    if([' ','ArrowRight','ArrowLeft','PageDown','PageUp','Home','End','Escape'].indexOf(e.key)>-1){e.preventDefault();post({type:'key',key:e.key})}
+  });
+  if(document.readyState==='complete')init();else window.addEventListener('load',init);
 })();
 </script>
 </body>
