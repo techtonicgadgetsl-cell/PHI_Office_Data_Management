@@ -39,6 +39,10 @@ body.presenting [data-view] button:has(.fa-trash),body.presenting [data-view] bu
 .deck-topic .tc .grip{cursor:move;background:#6366f1}
 .deck-edit{outline:2px dashed #6366f1;outline-offset:2px}
 .deck-edit .ed-ov{position:absolute;inset:0;cursor:move;z-index:20;background:rgba(99,102,241,.06)}
+.deck-edit .ed-mv{position:absolute;left:8px;top:8px;z-index:22;display:flex;gap:6px}
+.deck-edit .ed-mv button{background:#0f172a;color:#fff;border:2px solid #fff;border-radius:8px;padding:4px 10px;font:700 12px system-ui,sans-serif;cursor:pointer}
+.deck-edit .ed-mv button:hover{background:#6366f1}
+.deck-edit .ed-mv button[disabled]{opacity:.35;cursor:default}
 .deck-edit .ed-rs{position:absolute;right:-8px;bottom:-8px;width:22px;height:22px;background:#6366f1;border:2px solid #fff;border-radius:6px;cursor:nwse-resize;z-index:21}
 .deck-edit .ed-rw{position:absolute;right:-8px;top:30%;height:40%;width:12px;background:#6366f1;border:2px solid #fff;border-radius:6px;cursor:ew-resize;z-index:21}
 #deck-edit-bar{position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:99999;display:flex;align-items:center;gap:8px;background:#0f172a;color:#e2e8f0;padding:6px 10px;border-radius:999px;font:600 12px system-ui,sans-serif;box-shadow:0 4px 16px rgba(0,0,0,.35)}
@@ -691,6 +695,11 @@ body.presenting [data-view] button:has(.fa-trash),body.presenting [data-view] bu
     var rs=document.createElement('div');rs.className='ed-rs';rs.title='Drag: scale';
     var rw=document.createElement('div');rw.className='ed-rw';rw.title='Drag: width';
     el.appendChild(ov);el.appendChild(rs);el.appendChild(rw);
+    var mv=document.createElement('div');mv.className='ed-mv';
+    mv.innerHTML='<button type="button" data-d="-1"'+(idx===0?' disabled':'')+'>◀ Page '+idx+'</button><button type="button" data-d="1">'+(idx>=pages.length-1?'＋ New page ▶':'Page '+(idx+2)+' ▶')+'</button>';
+    mv.addEventListener('pointerdown',function(e){e.stopPropagation()});
+    mv.addEventListener('click',function(e){var d=e.target.getAttribute&&e.target.getAttribute('data-d');if(d){e.stopPropagation();moveCard(el,parseInt(d,10))}});
+    el.appendChild(mv);
     var resizeSoon=function(){window.dispatchEvent(new Event('resize'))};
     drag(ov,function(){return {x:c.x,y:c.y}},function(p){c.x=p.x;c.y=p.y;applyCard(el,c)});
     var z0,w0;
@@ -702,26 +711,32 @@ body.presenting [data-view] button:has(.fa-trash),body.presenting [data-view] bu
   function clearEdit(){
     kids.forEach(function(el){
       el.classList.remove('deck-edit');
-      [].slice.call(el.querySelectorAll(':scope > .ed-ov,:scope > .ed-rs,:scope > .ed-rw')).forEach(function(n){n.remove()});
+      [].slice.call(el.querySelectorAll(':scope > .ed-ov,:scope > .ed-rs,:scope > .ed-rw,:scope > .ed-mv')).forEach(function(n){n.remove()});
     });
   }
 
   /* ---------- render current page ---------- */
   function layout(){
     var v=V();
+    clearEdit();
     kids.forEach(function(e){e.classList.remove('slide-active','deck-abs');['zoom','left','top','width'].forEach(function(p){e.style.removeProperty(p)})});
     [].slice.call(v.querySelectorAll(':scope > .deck-topic')).forEach(function(n){n.remove()});
     var l=L();
     v.classList.toggle('canvas',!!l);
     document.body.classList.toggle('deck-editing',editing);
     if(l){
-      var bottom=0;
-      (pages[idx]||[]).forEach(function(el){var c=l.cards[kids.indexOf(el)];if(c)bottom=Math.max(bottom,c.y+0)});
-      (pages[idx]||[]).forEach(function(el){
-        var i=kids.indexOf(el);
-        if(!l.cards[i]){l.cards[i]={x:40,y:bottom+40,w:1100,z:1};bottom+=400}
-        applyCard(el,l.cards[i]);
-      });
+      var missing=[];
+      (pages[idx]||[]).forEach(function(el){var i=kids.indexOf(el);if(l.cards[i])applyCard(el,l.cards[i]);else missing.push(el)});
+      if(missing.length){
+        var vr0=v.getBoundingClientRect(),s0=S(),bottom=0;
+        (pages[idx]||[]).forEach(function(el){if(missing.indexOf(el)<0){var r=el.getBoundingClientRect();bottom=Math.max(bottom,(r.bottom-vr0.top)/s0)}});
+        missing.forEach(function(el){
+          var c={x:40,y:bottom?bottom+20:20,w:1100,z:1};l.cards[kids.indexOf(el)]=c;applyCard(el,c);
+          var h=el.getBoundingClientRect().height/s0,room=v.clientHeight/s0-c.y-10;
+          if(room>0&&h>room){c.z=Math.max(.3,room/h);applyCard(el,c);h=h*c.z}
+          bottom=c.y+h;
+        });
+      }
       (l.topics||[]).forEach(makeTopic);
       if(editing)(pages[idx]||[]).forEach(decorate);
     }else{
@@ -739,10 +754,10 @@ body.presenting [data-view] button:has(.fa-trash),body.presenting [data-view] bu
   /* ---------- edit mode ---------- */
   function buildBar(){
     bar=document.createElement('div');bar.id='deck-edit-bar';
-    bar.innerHTML='<span>✎ Layout edit — drag = move · corner = size · edge = width</span><button type="button" data-a="topic">＋ Topic</button><button type="button" data-a="reset">↺ Reset page</button><button type="button" data-a="done">✓ Done</button>';
+    bar.innerHTML='<span>✎ Edit — drag = move · corner = size · edge = width · ◀▶ = move to another page</span><button type="button" data-a="topic">＋ Topic</button><button type="button" data-a="reset">↺ Reset page</button><button type="button" data-a="resetall">↺ Reset all</button><button type="button" data-a="done">✓ Done</button>';
     bar.addEventListener('click',function(e){
       var a=e.target.getAttribute&&e.target.getAttribute('data-a');
-      if(a==='topic')addTopic();else if(a==='reset')resetPage();else if(a==='done')setEdit(false);
+      if(a==='topic')addTopic();else if(a==='reset')resetPage();else if(a==='resetall')resetAll();else if(a==='done')setEdit(false);
     });
     document.body.appendChild(bar);
   }
@@ -753,6 +768,55 @@ body.presenting [data-view] button:has(.fa-trash),body.presenting [data-view] bu
     var d=makeTopic(t);document.body.classList.add('deck-editing');d._sync();
     var tx=d.querySelector('.tx');tx.focus();
     var r=document.createRange();r.selectNodeContents(tx);var sel=getSelection();sel.removeAllRanges();sel.addRange(r);
+  }
+  function ensurePages(){
+    if(!store.pages)store.pages=pages.map(function(a){return a.map(function(e){return kids.indexOf(e)})});
+  }
+  function removePage(i){
+    var l=store['p'+i];
+    if(pages[i].length||(l&&(l.topics||[]).length))return false;
+    pages.splice(i,1);store.pages.splice(i,1);
+    var n=pages.length+1;
+    for(var j=i;j<n;j++){if(store['p'+(j+1)])store['p'+j]=store['p'+(j+1)];else delete store['p'+j]}
+    delete store['p'+n];
+    return true;
+  }
+  function moveCard(el,d){
+    var from=idx,to=idx+d,i=kids.indexOf(el);
+    if(to<0)return;
+    ensurePages();
+    if(to>=pages.length){pages.push([]);store.pages.push([])}
+    pages[from].splice(pages[from].indexOf(el),1);store.pages[from].splice(store.pages[from].indexOf(i),1);
+    pages[to].push(el);store.pages[to].push(i);
+    var lf=store['p'+from];if(lf&&lf.cards)delete lf.cards[i];
+    if(removePage(from)&&to>from)to--;
+    idx=to;
+    /* keep the target page as is: auto pages stay automatic, canvas pages place the card below the others */
+    var lt=store['p'+idx];
+    if(!lt){store['p'+idx]={cards:null,topics:[]}} /* auto page: no custom cards */
+    if(store['p'+idx]&&!store['p'+idx].cards)delete store['p'+idx];
+    touched=true;saveStore();
+    if(editing&&!L()){store['p'+idx]={cards:captureAuto(),topics:[],auto:true}}
+    show();
+  }
+  function captureAuto(){layout0();return captureCards()}
+  function layout0(){
+    var v=V();
+    kids.forEach(function(e){e.classList.remove('slide-active','deck-abs');['zoom','left','top','width'].forEach(function(p){e.style.removeProperty(p)})});
+    [].slice.call(v.querySelectorAll(':scope > .deck-topic')).forEach(function(n){n.remove()});
+    v.classList.remove('canvas');
+    (pages[idx]||[]).forEach(function(e){e.classList.add('slide-active')});
+    fit();
+  }
+  function resetAll(){
+    if(!confirm('Reset ALL page arrangement and layouts of this section to automatic?'))return;
+    store={};try{localStorage.removeItem(KEY)}catch(e){}
+    var was=editing;editing=false;clearEdit();
+    var v=V(),k=-1;
+    kids.forEach(function(e,i){if(k<0&&i>0&&/annual/i.test((e.innerText||'').trim().slice(0,90)))k=i});
+    if(k<0)k=kids.length-1;
+    pages=k>0?[kids.slice(0,k),kids.slice(k)]:[kids];idx=0;touched=false;
+    show();if(was)setTimeout(function(){setEdit(true)},200);
   }
   function resetPage(){
     if(!confirm('Reset this page layout to automatic?'))return;
@@ -784,6 +848,13 @@ body.presenting [data-view] button:has(.fa-trash),body.presenting [data-view] bu
     kids.forEach(function(e,i){if(k<0&&i>0&&/annual/i.test((e.innerText||'').trim().slice(0,90)))k=i});
     if(k<0)k=kids.length-1;
     pages=k>0?[kids.slice(0,k),kids.slice(k)]:[kids];
+    if(store.pages&&store.pages.length){
+      var used={},custom=store.pages.map(function(a){return a.map(function(i){used[i]=1;return kids[i]}).filter(Boolean)});
+      var rest=kids.filter(function(e,i){return !used[i]});
+      if(rest.length)custom[custom.length-1]=(custom[custom.length-1]||[]).concat(rest);
+      custom=custom.filter(function(a,i){return a.length||(store['p'+i]&&(store['p'+i].topics||[]).length)});
+      if(custom.length)pages=custom;
+    }
     document.body.classList.add('presenting');
     idx=/[?&]start=last/.test(location.search)?pages.length-1:0;
     var h=document.querySelector('header h1'),p=h&&h.parentNode.querySelector('p');
