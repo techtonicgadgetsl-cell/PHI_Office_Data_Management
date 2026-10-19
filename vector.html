@@ -44,6 +44,7 @@ body.presenting [data-view] button:has(.fa-trash),body.presenting [data-view] bu
 .deck-edit .ed-mv button:hover{background:#6366f1}
 .deck-edit .ed-mv button[disabled]{opacity:.35;cursor:default}
 .deck-edit .ed-rs{position:absolute;right:-8px;bottom:-8px;width:22px;height:22px;background:#6366f1;border:2px solid #fff;border-radius:6px;cursor:nwse-resize;z-index:21}
+.deck-edit .ed-rh{position:absolute;left:30%;bottom:-8px;width:40%;height:12px;background:#6366f1;border:2px solid #fff;border-radius:6px;cursor:ns-resize;z-index:21}
 .deck-edit .ed-rw{position:absolute;right:-8px;top:30%;height:40%;width:12px;background:#6366f1;border:2px solid #fff;border-radius:6px;cursor:ew-resize;z-index:21}
 #deck-edit-bar{position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:99999;display:flex;align-items:center;gap:8px;background:#0f172a;color:#e2e8f0;padding:6px 10px;border-radius:999px;font:600 12px system-ui,sans-serif;box-shadow:0 4px 16px rgba(0,0,0,.35)}
 #deck-edit-bar button{background:#334155;color:#fff;border:0;border-radius:999px;padding:5px 12px;cursor:pointer;font:700 12px system-ui,sans-serif}
@@ -644,6 +645,15 @@ body.presenting [data-view] button:has(.fa-trash),body.presenting [data-view] bu
     var s=S(),zt=c.z*s;
     el.classList.add('slide-active','deck-abs');
     el.style.zoom=zt;el.style.left=(c.x/c.z)+'px';el.style.top=(c.y/c.z)+'px';el.style.width=c.w+'px';
+    chartH(el,c.dh||0);
+  }
+  function chartWraps(el){return [].slice.call(el.querySelectorAll('canvas')).map(function(cv){return cv.parentElement}).filter(function(w,i,a){return w&&w!==el&&a.indexOf(w)===i})}
+  function chartH(el,dh){
+    chartWraps(el).forEach(function(w){
+      if(!dh){w.style.removeProperty('height');return}
+      if(!w._nat){w.style.removeProperty('height');var h0=parseFloat(getComputedStyle(w).height);if(h0>0)w._nat=h0}
+      w.style.height=Math.max(70,(w._nat||0)+dh)+'px';
+    });
   }
   function captureCards(){
     var v=V(),vr=v.getBoundingClientRect(),s=S(),cards={},bottom=0;
@@ -701,6 +711,11 @@ body.presenting [data-view] button:has(.fa-trash),body.presenting [data-view] bu
     mv.addEventListener('click',function(e){var d=e.target.getAttribute&&e.target.getAttribute('data-d');if(d){e.stopPropagation();moveCard(el,parseInt(d,10))}});
     el.appendChild(mv);
     var resizeSoon=function(){window.dispatchEvent(new Event('resize'))};
+    if(chartWraps(el).length){
+      var rh=document.createElement('div');rh.className='ed-rh';rh.title='Drag: graph height';el.appendChild(rh);
+      var dh0;rh.addEventListener('pointerdown',function(){dh0=c.dh||0});
+      drag(rh,function(){return {x:0,y:0}},function(p){var nat=Math.min.apply(null,chartWraps(el).map(function(w){return w._nat||200}));c.dh=Math.max(70-nat,dh0+p.dy/(c.z*S()));applyCard(el,c)},resizeSoon);
+    }
     drag(ov,function(){return {x:c.x,y:c.y}},function(p){c.x=p.x;c.y=p.y;applyCard(el,c)});
     var z0,w0;
     rs.addEventListener('pointerdown',function(){z0=c.z});
@@ -711,7 +726,7 @@ body.presenting [data-view] button:has(.fa-trash),body.presenting [data-view] bu
   function clearEdit(){
     kids.forEach(function(el){
       el.classList.remove('deck-edit');
-      [].slice.call(el.querySelectorAll(':scope > .ed-ov,:scope > .ed-rs,:scope > .ed-rw,:scope > .ed-mv')).forEach(function(n){n.remove()});
+      [].slice.call(el.querySelectorAll(':scope > .ed-ov,:scope > .ed-rs,:scope > .ed-rw,:scope > .ed-rh,:scope > .ed-mv')).forEach(function(n){n.remove()});
     });
   }
 
@@ -721,6 +736,7 @@ body.presenting [data-view] button:has(.fa-trash),body.presenting [data-view] bu
     clearEdit();
     kids.forEach(function(e){e.classList.remove('slide-active','deck-abs');['zoom','left','top','width'].forEach(function(p){e.style.removeProperty(p)})});
     [].slice.call(v.querySelectorAll(':scope > .deck-topic')).forEach(function(n){n.remove()});
+    kids.forEach(function(e){chartH(e,0)});
     var l=L();
     v.classList.toggle('canvas',!!l);
     document.body.classList.toggle('deck-editing',editing);
@@ -754,10 +770,10 @@ body.presenting [data-view] button:has(.fa-trash),body.presenting [data-view] bu
   /* ---------- edit mode ---------- */
   function buildBar(){
     bar=document.createElement('div');bar.id='deck-edit-bar';
-    bar.innerHTML='<span>✎ Edit — drag = move · corner = size · edge = width · ◀▶ = move to another page</span><button type="button" data-a="topic">＋ Topic</button><button type="button" data-a="reset">↺ Reset page</button><button type="button" data-a="resetall">↺ Reset all</button><button type="button" data-a="done">✓ Done</button>';
+    bar.innerHTML='<span>✎ Edit — drag = move · corner = size · side edge = width · bottom edge = graph height · ◀▶ = move to another page</span><button type="button" data-a="topic">＋ Topic</button><button type="button" data-a="page">＋ Page</button><button type="button" data-a="reset">↺ Reset page</button><button type="button" data-a="resetall">↺ Reset all</button><button type="button" data-a="done">✓ Done</button>';
     bar.addEventListener('click',function(e){
       var a=e.target.getAttribute&&e.target.getAttribute('data-a');
-      if(a==='topic')addTopic();else if(a==='reset')resetPage();else if(a==='resetall')resetAll();else if(a==='done')setEdit(false);
+      if(a==='topic')addTopic();else if(a==='page')addPage();else if(a==='reset')resetPage();else if(a==='resetall')resetAll();else if(a==='done')setEdit(false);
     });
     document.body.appendChild(bar);
   }
@@ -808,6 +824,24 @@ body.presenting [data-view] button:has(.fa-trash),body.presenting [data-view] bu
     (pages[idx]||[]).forEach(function(e){e.classList.add('slide-active')});
     fit();
   }
+  function addPage(){
+    ensurePages();
+    var at=idx+1;
+    pages.splice(at,0,[]);store.pages.splice(at,0,[]);
+    for(var j=pages.length-1;j>at;j--){if(store['p'+(j-1)])store['p'+j]=store['p'+(j-1)];else delete store['p'+j]}
+    delete store['p'+at];
+    idx=at;touched=true;
+    store['p'+idx]={cards:{},topics:[]};
+    saveStore();show();
+  }
+  function pruneEmpty(){
+    if(!store.pages)return;
+    for(var i=pages.length-1;i>=0&&pages.length>1;i--){
+      if(removePage(i)&&idx>=i&&idx>0)idx--;
+    }
+    if(idx>=pages.length)idx=pages.length-1;
+    saveStore();
+  }
   function resetAll(){
     if(!confirm('Reset ALL page arrangement and layouts of this section to automatic?'))return;
     store={};try{localStorage.removeItem(KEY)}catch(e){}
@@ -833,7 +867,7 @@ body.presenting [data-view] button:has(.fa-trash),body.presenting [data-view] bu
     }else{
       editing=false;if(bar)bar.style.display='none';
       var l=store[k];if(l&&l.auto&&!touched)delete store[k];
-      clearEdit();layout();
+      clearEdit();pruneEmpty();layout();post({type:'state',idx:idx,count:pages.length});
       var a=document.activeElement;if(a&&a.blur)a.blur();
     }
     post({type:'edit',on:editing});
@@ -852,7 +886,6 @@ body.presenting [data-view] button:has(.fa-trash),body.presenting [data-view] bu
       var used={},custom=store.pages.map(function(a){return a.map(function(i){used[i]=1;return kids[i]}).filter(Boolean)});
       var rest=kids.filter(function(e,i){return !used[i]});
       if(rest.length)custom[custom.length-1]=(custom[custom.length-1]||[]).concat(rest);
-      custom=custom.filter(function(a,i){return a.length||(store['p'+i]&&(store['p'+i].topics||[]).length)});
       if(custom.length)pages=custom;
     }
     document.body.classList.add('presenting');
