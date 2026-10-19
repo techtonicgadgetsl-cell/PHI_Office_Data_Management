@@ -249,7 +249,7 @@
         console.log("Cloud Dashboard Core Synchronized successfully.");
     </script>
 <div id="deck-overlay">
-  <div id="deck-top"><span class="t" id="deck-topic"></span><span class="m" id="deck-pos"></span><button type="button" onclick="deckExit()">✕ Exit (Esc)</button></div>
+  <div id="deck-top"><span class="t" id="deck-topic"></span><span class="m" id="deck-pos"></span><span style="display:flex;gap:.5rem"><button type="button" id="deck-edit-btn" onclick="deckEdit()">✎ Edit layout</button><button type="button" onclick="deckExit()">✕ Exit (Esc)</button></span></div>
   <div id="deck-stage">
     <iframe id="deck-frame" title="Presentation slide"></iframe>
     <div id="deck-title"><div class="n" id="deck-n"></div><h2 id="deck-h"></h2><p id="deck-p"></p><div class="h">Press → or Space to begin</div></div>
@@ -259,7 +259,7 @@
 <script id="deck-js">
 (function(){
   var M=[["erhmis.html","01. eRhmis Report & Returns"],["disease.html","02. Communicable Diseases"],["food_safety.html","03. Food Safety & Hygiene"],["occupational.html","04. Occupational Health"],["environmental.html","05. Environmental Pollution"],["vector.html","06. Vector Control"],["school_health.html","07. School Health & SMI"],["education.html","08. Health Education Program"],["trade_inspection.html","09. TRC & BRC Approval"],["special.html","10. Special Program Log"]];
-  var mi=0,mode='title',idx=0,count=0,ready=false,sub='';
+  var mi=0,mode='title',idx=0,count=0,ready=false,sub='',editing=false;
   function $(id){return document.getElementById(id)}
   function render(){
     var title=M[mi][1];
@@ -270,9 +270,14 @@
     $('deck-h').textContent=title.replace(/^\d+\.\s*/,'');
     $('deck-p').textContent=sub;
     $('deck-count').textContent=mode==='title'?'Section title':(ready?(idx+1)+' / '+count:'…');
+    var b=$('deck-edit-btn');b.textContent=editing?'✓ Done editing':'✎ Edit layout';b.style.display=mode==='title'?'none':'';
   }
+  window.deckEdit=function(){
+    if(mode==='title'||!ready)return;
+    editing=!editing;$('deck-frame').contentWindow.postMessage({src:'phi-deck',type:'edit',on:editing},'*');render();
+  };
   function load(i,pos){
-    mi=i;ready=false;idx=0;count=0;sub='';
+    mi=i;ready=false;idx=0;count=0;sub='';editing=false;
     mode=pos==='last'?'slides':'title';
     $('deck-frame').src=M[i][0]+'?present=1'+(pos==='last'?'&start=last':'');
     render();
@@ -288,13 +293,13 @@
   };
   window.deckNext=function(){
     if(mode==='title'){mode='slides';render();return}
-    if(!ready)return;
+    if(!ready||editing)return;
     if(idx<count-1){$('deck-frame').contentWindow.postMessage({src:'phi-deck',type:'goto',idx:idx+1},'*')}
     else if(mi<M.length-1){load(mi+1,'first')}
   };
   window.deckPrev=function(){
     if(mode==='title'){if(mi>0)load(mi-1,'last');return}
-    if(!ready)return;
+    if(!ready||editing)return;
     if(idx>0){$('deck-frame').contentWindow.postMessage({src:'phi-deck',type:'goto',idx:idx-1},'*')}
     else{mode='title';render()}
   };
@@ -303,17 +308,19 @@
     else if(k==='ArrowLeft'||k==='PageUp')deckPrev();
     else if(k==='Home')load(0,'first');
     else if(k==='End')load(M.length-1,'last');
-    else if(k==='Escape')deckExit();
+    else if(k==='Escape'){if(editing)deckEdit();else deckExit()}
   }
   window.addEventListener('message',function(e){
     var d=e.data;if(!d||d.src!=='phi-slide'||e.source!==$('deck-frame').contentWindow)return;
     if(d.type==='ready'){sub=d.sub||'';ready=true}
     if(d.type==='state'){idx=d.idx;count=d.count;ready=true}
+    if(d.type==='edit')editing=!!d.on;
     if(d.type==='key')key(d.key);
     render();
   });
   document.addEventListener('keydown',function(e){
     if(!$('deck-overlay').classList.contains('on'))return;
+    if(editing&&e.key!=='Escape')return;
     if([' ','ArrowRight','ArrowLeft','PageDown','PageUp','Home','End','Escape'].indexOf(e.key)>-1){e.preventDefault();key(e.key)}
   });
   document.addEventListener('fullscreenchange',function(){
