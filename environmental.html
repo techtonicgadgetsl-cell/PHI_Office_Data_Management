@@ -20,9 +20,9 @@ body.portal-hidden [data-view]{grid-column:1/-1 !important}
 </style>
 <style id="present-mode-css">
 body.presenting header,body.presenting aside,body.presenting [data-portal]{display:none !important}
-body.presenting [data-view]{grid-column:1/-1 !important;padding:1.5rem 2.5rem 5rem}
-body.presenting [data-view] > *{display:none !important}
-body.presenting [data-view] > .slide-active{display:block !important;zoom:1.2}
+body.presenting [data-view]{grid-column:1/-1 !important;padding:1.25rem 2rem 1.25rem;display:flex !important;flex-direction:column;gap:1.25rem;overflow-y:auto}
+body.presenting [data-view] > *{display:none !important;margin:0 !important;flex:none !important}
+body.presenting [data-view] > .slide-active{display:block !important}
 body.presenting [data-view] > .slide-active.grid{display:grid !important}
 body.presenting [data-view] button:has(.fa-trash),body.presenting [data-view] button:has(.fa-trash-can),body.presenting [data-view] button:has(.fa-pen-to-square),body.presenting [data-view] [onclick*="delete" i],body.presenting [data-view] [onclick*="remove" i],body.presenting [data-view] [onclick*="clear" i]{display:none !important}
 </style>
@@ -542,30 +542,49 @@ body.presenting [data-view] button:has(.fa-trash),body.presenting [data-view] bu
 })();
 </script>
 <script id="present-mode-js">
-/* Presentation mode: runs only when opened inside the dashboard deck (?present=1). */
+/* Presentation mode: runs only when opened inside the dashboard deck (?present=1).
+   Each section is shown as at most 2 pages: page 1 = monthly content, page 2 = annual trend (or the last card). */
 (function(){
   if(!/[?&]present=1/.test(location.search)||window.parent===window)return;
-  var slides=[],idx=0;
+  var pages=[],idx=0;
   function post(o){o.src='phi-slide';window.parent.postMessage(o,'*')}
+  function fit(){
+    var v=document.querySelector('[data-view]');if(!v)return;
+    var act=pages[idx]||[];
+    act.forEach(function(e){e.style.zoom=1});
+    var cs=getComputedStyle(v),avail=v.clientHeight-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom);
+    var total=0;act.forEach(function(e){total+=e.offsetHeight});
+    total+=Math.max(act.length-1,0)*20;
+    var z=total>0?Math.min(1.25,Math.max(0.5,avail/total)):1;
+    act.forEach(function(e){e.style.zoom=z});
+  }
   function show(){
-    slides.forEach(function(s,i){s.classList.toggle('slide-active',i===idx)});
-    var v=document.querySelector('[data-view]');if(v)v.scrollTop=0;
-    post({type:'state',idx:idx,count:slides.length});
-    [60,300].forEach(function(t){setTimeout(function(){window.dispatchEvent(new Event('resize'))},t)});
+    var v=document.querySelector('[data-view]');
+    [].slice.call(v.children).forEach(function(e){e.classList.remove('slide-active');e.style.zoom=''});
+    (pages[idx]||[]).forEach(function(e){e.classList.add('slide-active')});
+    v.scrollTop=0;
+    post({type:'state',idx:idx,count:pages.length});
+    fit();
+    [80,350,900].forEach(function(t){setTimeout(function(){window.dispatchEvent(new Event('resize'));fit()},t)});
   }
   function init(){
     var v=document.querySelector('[data-view]');if(!v)return;
-    slides=[].slice.call(v.children).filter(function(e){return getComputedStyle(e).display!=='none'});
+    var kids=[].slice.call(v.children).filter(function(e){return getComputedStyle(e).display!=='none'});
+    var k=-1;
+    kids.forEach(function(e,i){if(k<0&&i>0&&/annual/i.test((e.innerText||'').trim().slice(0,90)))k=i});
+    if(k<0)k=kids.length-1;
+    pages=k>0?[kids.slice(0,k),kids.slice(k)]:[kids];
     document.body.classList.add('presenting');
-    idx=/[?&]start=last/.test(location.search)?Math.max(slides.length-1,0):0;
+    idx=/[?&]start=last/.test(location.search)?pages.length-1:0;
     var h=document.querySelector('header h1'),p=h&&h.parentNode.querySelector('p');
     post({type:'ready',title:h?h.textContent.trim():'',sub:p?p.textContent.trim():''});
     show();
   }
   window.addEventListener('message',function(e){
     var d=e.data;if(!d||d.src!=='phi-deck')return;
-    if(d.type==='goto'){idx=Math.min(Math.max(d.idx,0),slides.length-1);show()}
+    if(d.type==='goto'){idx=Math.min(Math.max(d.idx,0),pages.length-1);show()}
   });
+  window.addEventListener('resize',fit);
   document.addEventListener('keydown',function(e){
     var t=(e.target.tagName||'').toLowerCase();if(t==='input'||t==='select'||t==='textarea')return;
     if([' ','ArrowRight','ArrowLeft','PageDown','PageUp','Home','End','Escape'].indexOf(e.key)>-1){e.preventDefault();post({type:'key',key:e.key})}
