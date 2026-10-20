@@ -300,7 +300,7 @@ body.only-mode button:has(.fa-trash),body.only-mode button:has(.fa-trash-can),bo
                                 <tr>
                                     <th class="p-2 border-r text-left pl-3">School</th>
                                     <th class="p-2 border-r">Total Grade 7s</th>
-                                    <th class="p-2 border-r text-blue-600">aTd Given (Yr Total)</th>
+                                    <th class="p-2 border-r text-blue-600">aTd Given (To Date)</th>
                                     <th class="p-2 border-r text-blue-700">aTd Coverage %</th>
                                     <th class="p-2 border-r">Total Grade 6Fs</th>
                                     <th class="p-2 border-r text-purple-600">HPV Dose 1 Given</th>
@@ -569,7 +569,7 @@ body.only-mode button:has(.fa-trash),body.only-mode button:has(.fa-trash-can),bo
 
         function renderVaccinationTimelineTable() {
             /* One row per registered school (grows automatically when a school is added) + division total.
-               Yearly progress: cohort size = largest value entered in the year, doses given = sum of the year. */
+               Yearly progress = latest figures of the year (never summed across months). */
             const yearSel = document.getElementById('sel-year');
             const yl = document.getElementById('vax-year-label');
             if (yl && yearSel) yl.textContent = '(' + yearSel.value + ')';
@@ -580,14 +580,15 @@ body.only-mode button:has(.fa-trash),body.only-mode button:has(.fa-trash-can),bo
 
             registeredSchools.forEach(school => {
                 let atdStud = 0, atdGiven = 0, hpvStud = 0, hpvD1 = 0;
-                (currentYearData || []).forEach(mRec => {
-                    const r = mRec && mRec[school];
-                    if (!r) return;
-                    atdStud = Math.max(atdStud, r.atd_students || 0);
-                    hpvStud = Math.max(hpvStud, r.hpv_students || 0);
-                    atdGiven += r.atd_given || 0;
-                    hpvD1 += r.hpv_d1 || 0;
-                });
+                /* Use the LATEST month that has figures for this school (entries are progress-to-date,
+                   so they must never be added together). Target = students of that record. */
+                let gotAtd = false, gotHpv = false;
+                for (let m = 11; m >= 0 && !(gotAtd && gotHpv); m--) {
+                    const r = currentYearData && currentYearData[m] && currentYearData[m][school];
+                    if (!r) continue;
+                    if (!gotAtd && (r.atd_students || 0) > 0) { atdStud = r.atd_students; atdGiven = Math.min(r.atd_given || 0, atdStud); gotAtd = true; }
+                    if (!gotHpv && (r.hpv_students || 0) > 0) { hpvStud = r.hpv_students; hpvD1 = Math.min(r.hpv_d1 || 0, hpvStud); gotHpv = true; }
+                }
                 tAtdStud += atdStud; tAtdGiven += atdGiven; tHpvStud += hpvStud; tHpvD1 += hpvD1;
 
                 rowsHtml += `
@@ -849,7 +850,12 @@ body.only-mode button:has(.fa-trash),body.only-mode button:has(.fa-trash-can),bo
   function loadStore(cb){
     try{store=JSON.parse(localStorage.getItem(KEY))||{}}catch(e){store={}}
     var d=db(),done=false;
-    function fin(c){if(done)return;done=true;if(c&&c.json){try{store=JSON.parse(c.json)||{};localStorage.setItem(KEY,c.json)}catch(e){}}cb()}
+    function fin(c){
+      if(done)return;done=true;
+      if(c&&c.json){try{store=JSON.parse(c.json)||{};localStorage.setItem(KEY,c.json)}catch(e){}}
+      else if(c===null||(c&&!c.json)){if(Object.keys(store).length)setTimeout(saveStore,800)}   /* first time: upload this computer's layout to the cloud */
+      cb();
+    }
     if(!d){cb();return}
     var t=setTimeout(function(){fin(null)},3000);
     try{d.ref(CLOUD).once('value').then(function(s){clearTimeout(t);fin(s.val())}).catch(function(){clearTimeout(t);fin(null)})}catch(e){clearTimeout(t);fin(null)}
